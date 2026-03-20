@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inspection Report · BCT Mech</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0a1628;--navy-mid:#112040;--saffron:#f4a014;--steel:#3a7bd5;--white:#f8f9fc;--muted:#94a3b8;--border:rgba(255,255,255,0.08);--card:rgba(255,255,255,0.04);--green:#22c55e;--red:#ef4444;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--navy);color:var(--white);min-height:100vh;padding:28px 20px 60px;}
+.container{max-width:760px;margin:0 auto;}
+.page-title{font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;margin-bottom:4px;}
+.page-sub{font-size:13px;color:var(--muted);margin-bottom:28px;}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px;}
+.kpi-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;}
+.kpi-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.kpi-val{font-family:'Rajdhani',sans-serif;font-size:38px;font-weight:700;line-height:1;}
+.green{color:var(--green);}
+.red{color:var(--red);}
+.saffron{color:var(--saffron);}
+
+.section-title{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--saffron);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.section-title::before{content:'';display:block;width:3px;height:15px;background:var(--saffron);border-radius:2px;}
+
+/* Download buttons */
+.download-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px;}
+.dl-btn{display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px 12px;border-radius:12px;text-decoration:none;border:1px solid var(--border);background:var(--card);transition:all .15s;cursor:pointer;}
+.dl-btn:hover{background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.18);transform:translateY(-2px);}
+.dl-icon{font-size:28px;}
+.dl-label{font-size:13px;font-weight:600;color:var(--white);}
+.dl-sub{font-size:11px;color:var(--muted);}
+.dl-btn.pdf{border-color:rgba(239,68,68,0.3);}
+.dl-btn.docx{border-color:rgba(58,123,213,0.3);}
+.dl-btn.wa{border-color:rgba(34,197,94,0.3);}
+
+/* NC items */
+.nc-list{display:flex;flex-direction:column;gap:8px;margin-bottom:28px;}
+.nc-item{background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:12px 16px;}
+.nc-item-label{font-size:13px;color:var(--white);margin-bottom:3px;}
+.nc-item-meta{font-size:11.5px;color:var(--muted);}
+.nc-item-remark{font-size:12px;color:var(--saffron);margin-top:4px;font-style:italic;}
+.no-nc{font-size:14px;color:var(--green);padding:16px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:10px;text-align:center;}
+
+/* WhatsApp box */
+.wa-box{background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.2);border-radius:12px;padding:20px;margin-bottom:28px;}
+.wa-text{font-family:monospace;font-size:12px;color:var(--white);white-space:pre-wrap;line-height:1.6;max-height:280px;overflow-y:auto;}
+.copy-btn{margin-top:12px;padding:8px 20px;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:var(--green);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;}
+.copy-btn:hover{background:rgba(34,197,94,0.25);}
+
+.btn-back{padding:10px 24px;background:rgba(255,255,255,0.07);border:1px solid var(--border);border-radius:8px;color:var(--white);font-size:13.5px;font-weight:500;cursor:pointer;text-decoration:none;font-family:'IBM Plex Sans',sans-serif;display:inline-block;}
+.btn-back:hover{background:rgba(255,255,255,0.12);}
+
+@media(max-width:500px){.kpi-grid{grid-template-columns:repeat(2,1fr);}.download-grid{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+    <a href="/" class="btn-back">← New Inspection</a>
+  </div>
+
+  <div class="page-title">✅ Inspection Report Generated</div>
+  <div class="page-sub">{{ header.get('location','') }} &nbsp;·&nbsp; {{ header.get('date','') }} &nbsp;·&nbsp; {{ header.get('name','') }}</div>
+
+  <!-- KPI CARDS -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Total Items</div>
+      <div class="kpi-val">{{ total_ans }}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Compliant</div>
+      <div class="kpi-val green">{{ total_yes }}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Non-Compliant</div>
+      <div class="kpi-val red">{{ total_no }}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Compliance %</div>
+      <div class="kpi-val saffron">{{ pct }}%</div>
+    </div>
+  </div>
+
+  <!-- DOWNLOADS -->
+  <div class="section-title">Download Report</div>
+  <div class="download-grid">
+    <a href="/download/pdf" class="dl-btn pdf">
+      <div class="dl-icon">📄</div>
+      <div class="dl-label">Download PDF</div>
+      <div class="dl-sub">Formatted report</div>
+    </a>
+    <a href="/download/docx" class="dl-btn docx">
+      <div class="dl-icon">📝</div>
+      <div class="dl-label">Download Word</div>
+      <div class="dl-sub">.docx format</div>
+    </a>
+    <div class="dl-btn wa" onclick="copyWhatsApp()">
+      <div class="dl-icon">💬</div>
+      <div class="dl-label">Copy for WhatsApp</div>
+      <div class="dl-sub">Tap to copy</div>
+    </div>
+  </div>
+
+  <!-- NON-COMPLIANT ITEMS -->
+  <div class="section-title">Non-Compliant Items ({{ nc_items|length }})</div>
+  {% if nc_items %}
+  <div class="nc-list">
+    {% for item in nc_items %}
+    <div class="nc-item">
+      <div class="nc-item-label">{{ item.label }}</div>
+      <div class="nc-item-meta">{{ item.section }}</div>
+      {% if item.remark %}
+      <div class="nc-item-remark">Remark: {{ item.remark }}</div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="no-nc">🎉 All items compliant — Excellent inspection result!</div>
+  {% endif %}
+
+  <!-- WHATSAPP PREVIEW -->
+  <div class="section-title">WhatsApp Summary Preview</div>
+  <div class="wa-box">
+    <div class="wa-text" id="waText">{{ whatsapp }}</div>
+    <button class="copy-btn" onclick="copyWhatsApp()">📋 Copy to Clipboard</button>
+  </div>
+
+</div>
+
+<script>
+function copyWhatsApp() {
+  const text = document.getElementById('waText').innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    alert('Copied! Paste in WhatsApp.');
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    alert('Copied!');
+  });
+}
+</script>
+</body>
+</html>
