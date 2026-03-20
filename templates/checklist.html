@@ -83,7 +83,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--navy);color:var(--w
 <div class="tab-bar" id="tabBar">
   {% for section in sections %}
   <button class="tab-btn {% if loop.index == 1 %}active{% endif %}" data-idx="{{ loop.index0 }}" onclick="goSection({{ loop.index0 }})">
-    {{ section.icon }} {{ section.title }}
+    {{ section['icon'] }} {{ section['title'] }}
   </button>
   {% endfor %}
 </div>
@@ -92,19 +92,19 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--navy);color:var(--w
 <div class="main">
   {% for section in sections %}
   <div class="section-panel {% if loop.index == 1 %}active{% endif %}" id="section_{{ loop.index0 }}">
-    {% for sub in section.subsections %}
+    {% for sub in section['subsections'] %}
     <div class="subsection">
-      <div class="sub-title">{{ sub.title }}</div>
-      {% for item in sub.items %}
-      <div class="item-row" id="row_{{ item.id }}">
-        <div class="item-label">{{ item.label }}</div>
+      <div class="sub-title">{{ sub['title'] }}</div>
+      {% for item in sub['items'] %}
+      <div class="item-row" id="row_{{ item['id'] }}">
+        <div class="item-label">{{ item['label'] }}</div>
         <div class="item-controls">
-          <button class="yn-btn yes" onclick="setAnswer('{{ item.id }}', 'yes', this)">✓ Yes</button>
-          <button class="yn-btn no"  onclick="setAnswer('{{ item.id }}', 'no', this)">✗ No</button>
+          <button class="yn-btn yes" onclick="setAnswer('{{ item['id'] }}', 'yes', this)">✓ Yes</button>
+          <button class="yn-btn no"  onclick="setAnswer('{{ item['id'] }}', 'no', this)">✗ No</button>
           <input class="remark-input" type="text" placeholder="Remarks (optional)"
-                 id="remark_{{ item.id }}"
-                 onchange="setRemark('{{ item.id }}', this.value)"
-                 oninput="setRemark('{{ item.id }}', this.value)">
+                 id="remark_{{ item['id'] }}"
+                 onchange="setRemark('{{ item['id'] }}', this.value)"
+                 oninput="setRemark('{{ item['id'] }}', this.value)">
         </div>
       </div>
       {% endfor %}
