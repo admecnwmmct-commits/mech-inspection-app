@@ -350,7 +350,9 @@ def index():
 
 @app.route('/checklist')
 def checklist():
-    return render_template('checklist.html', sections=SECTIONS)
+    import json
+    sections_json = json.dumps(SECTIONS)
+    return render_template('checklist.html', sections_json=sections_json)
 
 @app.route('/submit', methods=['POST'])
 def submit():
