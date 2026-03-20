@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mechanical Dept Inspection App · BCT</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0a1628;--navy-mid:#112040;--navy-light:#1a3060;--saffron:#f4a014;--steel:#3a7bd5;--cyan:#00c8d4;--white:#f8f9fc;--muted:#94a3b8;--border:rgba(255,255,255,0.08);--card:rgba(255,255,255,0.04);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--navy);color:var(--white);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+.container{width:100%;max-width:600px;}
+.logo-row{display:flex;align-items:center;gap:14px;margin-bottom:32px;justify-content:center;}
+.logo-circle{width:52px;height:52px;background:var(--saffron);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.brand-title{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;letter-spacing:.03em;}
+.brand-sub{font-size:11px;color:var(--saffron);letter-spacing:.1em;text-transform:uppercase;margin-top:2px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;}
+.card-title{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;margin-bottom:6px;}
+.card-sub{font-size:13px;color:var(--muted);margin-bottom:28px;}
+.field{margin-bottom:20px;}
+label{display:block;font-size:12px;font-weight:600;color:var(--saffron);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;}
+input,select{width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--white);font-size:14px;font-family:'IBM Plex Sans',sans-serif;outline:none;transition:border-color .15s;}
+input:focus,select:focus{border-color:rgba(244,160,20,0.5);}
+select option{background:#1a2540;color:var(--white);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.btn-start{width:100%;background:var(--saffron);color:var(--navy);padding:14px;border-radius:10px;font-size:15px;font-weight:700;font-family:'Rajdhani',sans-serif;letter-spacing:.05em;border:none;cursor:pointer;margin-top:8px;transition:background .15s;}
+.btn-start:hover{background:#fbbf45;}
+.footer-note{text-align:center;font-size:11px;color:var(--muted);margin-top:20px;}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="logo-row">
+    <div class="logo-circle">🚂</div>
+    <div>
+      <div class="brand-title">Mechanical Dept · BCT Division</div>
+      <div class="brand-sub">Western Railway · Inspection App</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Start Inspection</div>
+    <div class="card-sub">Fill in the details below before proceeding to the checklist.</div>
+    <form id="headerForm">
+      <div class="field">
+        <label>Inspector Name</label>
+        <input type="text" id="name" placeholder="e.g. Gaurav Kumar" required>
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label>Designation</label>
+          <input type="text" id="designation" placeholder="e.g. JE / SSE / AEN">
+        </div>
+        <div class="field">
+          <label>Date of Inspection</label>
+          <input type="date" id="date" required>
+        </div>
+      </div>
+      <div class="field">
+        <label>Location / Depot / Yard</label>
+        <input type="text" id="location" placeholder="e.g. BCT Washing Line, Mahalaxmi Sick Line">
+      </div>
+      <div class="field">
+        <label>Type of Inspection</label>
+        <select id="insp_type">
+          <option value="">-- Select --</option>
+          <option>Coaching Depot — Registers</option>
+          <option>Coaching Depot — Physical Inspection</option>
+          <option>Sick Line & Train Duty on Platforms</option>
+          <option>Freight / Wagon Inspection</option>
+          <option>Combined Inspection (All Sections)</option>
+        </select>
+      </div>
+      <button type="submit" class="btn-start">Proceed to Checklist →</button>
+    </form>
+  </div>
+  <div class="footer-note">Mechanical Department · BCT Division · Western Railway</div>
+</div>
+<script>
+document.getElementById('date').valueAsDate = new Date();
+document.getElementById('headerForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const header = {
+    name: document.getElementById('name').value,
+    designation: document.getElementById('designation').value,
+    date: document.getElementById('date').value,
+    location: document.getElementById('location').value,
+    insp_type: document.getElementById('insp_type').value,
+  };
+  sessionStorage.setItem('header', JSON.stringify(header));
+  window.location.href = '/checklist';
+});
+</script>
+</body>
+</html>
