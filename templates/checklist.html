@@ -65,7 +65,8 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--navy);color:var(--w
 var SECTIONS=[];var currentSection=0;var responses={};var totalItems=0;
 var header=JSON.parse(sessionStorage.getItem('header')||'{}');
 document.getElementById('headerDisplay').textContent=(header.name||'Inspector')+' - '+(header.location||'')+' - '+(header.date||'');
-fetch('/api/sections').then(function(r){return r.json();}).then(function(data){SECTIONS=data;buildUI();}).catch(function(){document.getElementById('mainContent').innerHTML='<p style="color:red;padding:40px">Error loading. Please go back.</p>';});
+SECTIONS = {{ sections_json | safe }};
+buildUI();
 function buildUI(){
   var tabBar=document.getElementById('tabBar');
   var main=document.getElementById('mainContent');
