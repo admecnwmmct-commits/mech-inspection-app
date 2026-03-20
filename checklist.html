@@ -95,7 +95,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--navy);color:var(--w
     {% for sub in section.subsections %}
     <div class="subsection">
       <div class="sub-title">{{ sub.title }}</div>
-      {% for item in sub.items %}
+      {% for item in sub['items'] %}
       <div class="item-row" id="row_{{ item.id }}">
         <div class="item-label">{{ item.label }}</div>
         <div class="item-controls">
