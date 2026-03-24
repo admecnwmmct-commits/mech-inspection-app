@@ -58,6 +58,12 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--navy);color:var(--w
 .wa-actions{display:flex;gap:10px;}
 .btn-copy{padding:9px 20px;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:var(--green);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;}
 .btn-close{padding:9px 20px;background:rgba(255,255,255,0.07);border:1px solid var(--border);color:var(--white);border-radius:8px;font-size:13px;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;}
+.toggle-row{display:flex;align-items:center;gap:16px;margin-bottom:20px;padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;}
+.toggle-label{font-size:13px;font-weight:500;color:var(--white);}
+.toggle-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.toggle-options{display:flex;gap:8px;margin-left:auto;}
+.tog-btn{padding:7px 18px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--muted);transition:all .15s;}
+.tog-btn.active{background:rgba(244,160,20,0.15);border-color:var(--saffron);color:var(--saffron);}
 .btn-back{padding:9px 20px;background:rgba(255,255,255,0.07);border:1px solid var(--border);border-radius:8px;color:var(--white);font-size:13px;cursor:pointer;text-decoration:none;font-family:'IBM Plex Sans',sans-serif;display:inline-block;margin-bottom:20px;}
 @media(max-width:500px){.kpi-grid{grid-template-columns:1fr 1fr;}.dl-grid{grid-template-columns:1fr 1fr;}}
 </style>
@@ -100,6 +106,16 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--navy);color:var(--w
       {% endif %}
     </div>
 
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-label">Report Colour</div>
+        <div class="toggle-sub">Select format before downloading</div>
+      </div>
+      <div class="toggle-options">
+        <button class="tog-btn active" id="togColour" onclick="setColour(false)">🎨 Colour</button>
+        <button class="tog-btn" id="togBW" onclick="setColour(true)">⬛ Black &amp; White</button>
+      </div>
+    </div>
     <div class="dl-grid">
       <button class="dl-btn dl-pdf" onclick="downloadReport('pdf')">📄 Download PDF</button>
       <button class="dl-btn dl-docx" onclick="downloadReport('docx')">📝 Download Word</button>
@@ -144,6 +160,12 @@ function getFormData(){
   // built inline in downloadReport
 }
 
+var isBW = false;
+function setColour(bw){
+  isBW = bw;
+  document.getElementById('togColour').className = 'tog-btn' + (bw ? '' : ' active');
+  document.getElementById('togBW').className     = 'tog-btn' + (bw ? ' active' : '');
+}
 function downloadReport(type){
   var form = document.createElement('form');
   form.method = 'POST';
@@ -154,7 +176,9 @@ function downloadReport(type){
   var f2 = document.createElement('input');
   f2.type='hidden'; f2.name='extra_copy_to';
   f2.value = document.getElementById('extra_copy_to').value;
-  form.appendChild(f1); form.appendChild(f2);
+  var f3 = document.createElement('input');
+  f3.type='hidden'; f3.name='bw'; f3.value = isBW ? '1' : '0';
+  form.appendChild(f1); form.appendChild(f2); form.appendChild(f3);
   document.body.appendChild(form);
   form.submit();
   document.body.removeChild(form);
