@@ -64,26 +64,13 @@ def generate_pdf(header, responses, other_remarks='', extra_copy_to=''):
 
     story = []
 
-    # 1. Header banner
-    hdr_data = [[Paragraph("MECHANICAL DEPARTMENT INSPECTION REPORT", title_style)],
-                [Paragraph("Office of Sr. DME (Co.) BCT · Western Railway · Mumbai Central", sub_style)]]
-    hdr_tbl = Table(hdr_data, colWidths=[W])
-    hdr_tbl.setStyle(TableStyle([
-        ('BACKGROUND', (0,0),(-1,-1), navy),
-        ('TOPPADDING', (0,0),(-1,-1), 10),
-        ('BOTTOMPADDING',(0,0),(-1,-1), 10),
-        ('LINEBELOW',  (0,-1),(-1,-1), 3, saffron),
-    ]))
-    story.append(hdr_tbl)
-    story.append(Spacer(1, 0.3*cm))
-
-    # 2. Inspection line: "Inspection of X on date Y by Z (Designation)"
+    # 1. Inspection line
     loc   = header.get('location','')
     date  = header.get('date','')
     name  = header.get('name','')
     desig = header.get('designation','')
     itype = header.get('insp_type','')
-    intro_line = f"Inspection of <b>{loc}</b> on <b>{date}</b> by <b>{name}</b> ({desig})"
+    intro_line = f"Inspection of <b>{loc}</b> on <b>{date}</b> by <b>{desig}</b>"
     if itype:
         intro_line += f"<br/>Type: {itype}"
     story.append(Paragraph(intro_line, intro_style))
@@ -235,20 +222,6 @@ def generate_docx(header, responses, other_remarks='', extra_copy_to=''):
         sec.left_margin = sec.right_margin = Cm(2)
         sec.top_margin = sec.bottom_margin = Cm(2)
 
-    # Title
-    t = doc.add_heading('', 0)
-    r = t.add_run('MECHANICAL DEPARTMENT INSPECTION REPORT')
-    r.font.color.rgb = RGBColor(0x0a, 0x16, 0x28)
-    r.font.size = Pt(14)
-    t.alignment = WD_ALIGN_PARAGRAPH.CENTER
-
-    s = doc.add_paragraph('Office of Sr. DME (Co.) BCT · Western Railway · Mumbai Central')
-    s.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    s.runs[0].font.color.rgb = RGBColor(0x3a, 0x7b, 0xd5)
-    s.runs[0].font.size = Pt(9)
-
-    doc.add_paragraph()
-
     # Inspection line
     loc   = header.get('location','')
     date  = header.get('date','')
@@ -257,7 +230,7 @@ def generate_docx(header, responses, other_remarks='', extra_copy_to=''):
     itype = header.get('insp_type','')
     intro = doc.add_paragraph()
     intro.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    run_i = intro.add_run(f"Inspection of {loc} on {date} by {name} ({desig})")
+    run_i = intro.add_run(f"Inspection of {loc} on {date} by {desig}")
     run_i.bold = True
     run_i.font.size = Pt(11)
     run_i.font.color.rgb = RGBColor(0x0a, 0x16, 0x28)
