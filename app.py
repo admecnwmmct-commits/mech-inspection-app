@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, send_file, redirect, url_for, jsonify
+from flask import Flask, render_template, request, session, send_file, jsonify
 import os, io, json
 from datetime import datetime
 from checklist_data import SECTIONS
@@ -6,167 +6,205 @@ from checklist_data import SECTIONS
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "mech-bcr-inspection-2026")
 
-# ── PDF generation ────────────────────────────────────────────────────────────
-def generate_pdf(header, responses):
+# ── helpers ───────────────────────────────────────────────────────────────────
+def answered_items(responses):
+    """Return only items that have a yes/no answer."""
+    return {k: v for k, v in responses.items() if v.get('answer') in ('yes','no')}
+
+def collect_copy_to(header, responses):
+    """Auto-collect unique Action By names from all NO items."""
+    seen = set()
+    names = []
+    for v in responses.values():
+        if v.get('answer') == 'no' and v.get('action_by','').strip():
+            for n in v['action_by'].split(','):
+                n = n.strip()
+                if n and n not in seen:
+                    seen.add(n)
+                    names.append(n)
+    return names
+
+# ── PDF ───────────────────────────────────────────────────────────────────────
+def generate_pdf(header, responses, other_remarks='', extra_copy_to=''):
     from reportlab.lib.pagesizes import A4
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib.units import cm
     from reportlab.lib import colors
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer, HRFlowable
-    from reportlab.lib.enums import TA_CENTER, TA_LEFT
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer, HRFlowable, KeepTogether
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
 
     buf = io.BytesIO()
     doc = SimpleDocTemplate(buf, pagesize=A4,
-                            leftMargin=1.8*cm, rightMargin=1.8*cm,
+                            leftMargin=2*cm, rightMargin=2*cm,
                             topMargin=2*cm, bottomMargin=2*cm)
 
     navy   = colors.HexColor('#0a1628')
     saffron= colors.HexColor('#f4a014')
     steel  = colors.HexColor('#3a7bd5')
     lgray  = colors.HexColor('#f5f5f5')
-    mgray  = colors.HexColor('#e0e0e0')
+    mgray  = colors.HexColor('#d0d0d0')
     green  = colors.HexColor('#16a34a')
     red    = colors.HexColor('#dc2626')
     white  = colors.white
     black  = colors.black
+    W = 17*cm
 
-    styles = getSampleStyleSheet()
-    title_style  = ParagraphStyle('title',  fontSize=14, fontName='Helvetica-Bold',  textColor=white,   alignment=TA_CENTER, spaceAfter=4)
-    sub_style    = ParagraphStyle('sub',    fontSize=9,  fontName='Helvetica',        textColor=saffron, alignment=TA_CENTER, spaceAfter=2)
-    head2_style  = ParagraphStyle('head2',  fontSize=11, fontName='Helvetica-Bold',   textColor=navy,    spaceBefore=10, spaceAfter=4)
-    head3_style  = ParagraphStyle('head3',  fontSize=9,  fontName='Helvetica-Bold',   textColor=steel,   spaceBefore=6, spaceAfter=3)
-    body_style   = ParagraphStyle('body',   fontSize=8,  fontName='Helvetica',        textColor=black,   leading=12)
-    remark_style = ParagraphStyle('remark', fontSize=7.5,fontName='Helvetica-Oblique',textColor=colors.HexColor('#444444'), leading=11)
-    small_style  = ParagraphStyle('small',  fontSize=8,  fontName='Helvetica',        textColor=colors.HexColor('#444444'))
+    title_style   = ParagraphStyle('T',  fontSize=13, fontName='Helvetica-Bold', textColor=white,  alignment=TA_CENTER, spaceAfter=3)
+    sub_style     = ParagraphStyle('S',  fontSize=8.5,fontName='Helvetica',      textColor=saffron,alignment=TA_CENTER)
+    intro_style   = ParagraphStyle('I',  fontSize=10, fontName='Helvetica-Bold', textColor=navy,   alignment=TA_CENTER, spaceBefore=8, spaceAfter=8)
+    head2_style   = ParagraphStyle('H2', fontSize=10, fontName='Helvetica-Bold', textColor=navy,   spaceBefore=10, spaceAfter=4)
+    head3_style   = ParagraphStyle('H3', fontSize=8.5,fontName='Helvetica-Bold', textColor=steel,  spaceBefore=5, spaceAfter=3)
+    body_style    = ParagraphStyle('B',  fontSize=8,  fontName='Helvetica',      textColor=black,  leading=11)
+    remark_style  = ParagraphStyle('R',  fontSize=7.5,fontName='Helvetica-Oblique',textColor=colors.HexColor('#444444'), leading=10)
+    action_style  = ParagraphStyle('A',  fontSize=7.5,fontName='Helvetica-Bold', textColor=colors.HexColor('#0a1628'), leading=10)
+    small_style   = ParagraphStyle('SM', fontSize=8,  fontName='Helvetica',      textColor=colors.HexColor('#555555'))
+    obs_style     = ParagraphStyle('OB', fontSize=9,  fontName='Helvetica',      textColor=black,  leading=14, spaceAfter=4)
+    copy_style    = ParagraphStyle('CP', fontSize=8.5,fontName='Helvetica',      textColor=black,  leading=13)
+    copy_b_style  = ParagraphStyle('CB', fontSize=8.5,fontName='Helvetica-Bold', textColor=navy,   leading=13)
 
     story = []
 
-    # ── Header banner ──
-    W = 17.4*cm
+    # 1. Header banner
     hdr_data = [[Paragraph("MECHANICAL DEPARTMENT INSPECTION REPORT", title_style)],
                 [Paragraph("Office of Sr. DME (Co.) BCT · Western Railway · Mumbai Central", sub_style)]]
     hdr_tbl = Table(hdr_data, colWidths=[W])
     hdr_tbl.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), navy),
-        ('TOPPADDING', (0,0), (-1,-1), 10),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 10),
-        ('LEFTPADDING', (0,0), (-1,-1), 12),
-        ('RIGHTPADDING', (0,0), (-1,-1), 12),
-        ('LINEBELOW', (0,-1), (-1,-1), 3, saffron),
+        ('BACKGROUND', (0,0),(-1,-1), navy),
+        ('TOPPADDING', (0,0),(-1,-1), 10),
+        ('BOTTOMPADDING',(0,0),(-1,-1), 10),
+        ('LINEBELOW',  (0,-1),(-1,-1), 3, saffron),
     ]))
     story.append(hdr_tbl)
-    story.append(Spacer(1, 0.4*cm))
+    story.append(Spacer(1, 0.3*cm))
 
-    # ── Inspection details table ──
-    details = [
-        ["Inspector Name:", header.get('name',''),      "Designation:", header.get('designation','')],
-        ["Location:",       header.get('location',''),  "Date:",         header.get('date','')],
-        ["Inspection Type:",header.get('insp_type',''), "Division:",      "BCT / Western Railway"],
-    ]
-    det_tbl = Table(details, colWidths=[3.8*cm, 4.5*cm, 3.5*cm, 5.6*cm])
-    det_tbl.setStyle(TableStyle([
-        ('FONTNAME',  (0,0), (0,-1), 'Helvetica-Bold'),
-        ('FONTNAME',  (2,0), (2,-1), 'Helvetica-Bold'),
-        ('FONTSIZE',  (0,0), (-1,-1), 8.5),
-        ('TEXTCOLOR', (0,0), (0,-1), navy),
-        ('TEXTCOLOR', (2,0), (2,-1), navy),
-        ('BACKGROUND',(0,0), (-1,-1), lgray),
-        ('ROWBACKGROUNDS', (0,0), (-1,-1), [lgray, white]),
-        ('GRID', (0,0), (-1,-1), 0.5, mgray),
-        ('TOPPADDING', (0,0), (-1,-1), 5),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 5),
-        ('LEFTPADDING', (0,0), (-1,-1), 8),
-    ]))
-    story.append(det_tbl)
-    story.append(Spacer(1, 0.5*cm))
+    # 2. Inspection line: "Inspection of X on date Y by Z (Designation)"
+    loc   = header.get('location','')
+    date  = header.get('date','')
+    name  = header.get('name','')
+    desig = header.get('designation','')
+    itype = header.get('insp_type','')
+    intro_line = f"Inspection of <b>{loc}</b> on <b>{date}</b> by <b>{name}</b> ({desig})"
+    if itype:
+        intro_line += f"<br/>Type: {itype}"
+    story.append(Paragraph(intro_line, intro_style))
+    story.append(HRFlowable(width=W, thickness=1, color=saffron, spaceAfter=8))
 
-    # ── Score summary ──
-    total_yes = sum(1 for v in responses.values() if v.get('answer') == 'yes')
-    total_no  = sum(1 for v in responses.values() if v.get('answer') == 'no')
+    # 3. Score summary
+    ans_resp  = answered_items(responses)
+    total_yes = sum(1 for v in ans_resp.values() if v.get('answer') == 'yes')
+    total_no  = sum(1 for v in ans_resp.values() if v.get('answer') == 'no')
     total_ans = total_yes + total_no
     pct = round(100 * total_yes / total_ans) if total_ans else 0
 
-    score_data = [["Total Items", "Compliant (Yes)", "Non-Compliant (No)", "Compliance %"],
+    score_data = [["Items Inspected", "Satisfactory", "Deficiencies", "Compliance %"],
                   [str(total_ans), str(total_yes), str(total_no), f"{pct}%"]]
     score_tbl = Table(score_data, colWidths=[W/4]*4)
     score_tbl.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,0), steel),
-        ('TEXTCOLOR',  (0,0), (-1,0), white),
-        ('FONTNAME',   (0,0), (-1,0), 'Helvetica-Bold'),
-        ('FONTSIZE',   (0,0), (-1,-1), 9),
-        ('ALIGN',      (0,0), (-1,-1), 'CENTER'),
-        ('VALIGN',     (0,0), (-1,-1), 'MIDDLE'),
-        ('BACKGROUND', (0,1), (-1,1), lgray),
-        ('GRID',       (0,0), (-1,-1), 0.5, mgray),
-        ('TOPPADDING', (0,0), (-1,-1), 6),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
-        ('FONTNAME',   (0,1), (-1,1), 'Helvetica-Bold'),
-        ('TEXTCOLOR',  (1,1), (1,1), green),
-        ('TEXTCOLOR',  (2,1), (2,1), red),
-        ('FONTSIZE',   (0,1), (-1,1), 12),
+        ('BACKGROUND',(0,0),(-1,0), steel),
+        ('TEXTCOLOR', (0,0),(-1,0), white),
+        ('FONTNAME',  (0,0),(-1,0), 'Helvetica-Bold'),
+        ('FONTSIZE',  (0,0),(-1,-1), 9),
+        ('ALIGN',     (0,0),(-1,-1), 'CENTER'),
+        ('VALIGN',    (0,0),(-1,-1), 'MIDDLE'),
+        ('BACKGROUND',(0,1),(-1,1), lgray),
+        ('GRID',      (0,0),(-1,-1), 0.5, mgray),
+        ('TOPPADDING',(0,0),(-1,-1), 5),
+        ('BOTTOMPADDING',(0,0),(-1,-1), 5),
+        ('FONTNAME',  (0,1),(-1,1), 'Helvetica-Bold'),
+        ('TEXTCOLOR', (1,1),(1,1), green),
+        ('TEXTCOLOR', (2,1),(2,1), red),
+        ('FONTSIZE',  (0,1),(-1,1), 11),
     ]))
     story.append(score_tbl)
-    story.append(Spacer(1, 0.6*cm))
+    story.append(Spacer(1, 0.5*cm))
 
-    # ── Per section checklist ──
+    # 4. Per-section tables — ONLY answered items
     for section in SECTIONS:
-        story.append(Paragraph(f"{section['icon']}  {section['title'].upper()}", head2_style))
-        story.append(HRFlowable(width=W, thickness=1.5, color=saffron, spaceAfter=6))
-
+        sec_rows = []
         for sub in section['subsections']:
-            story.append(Paragraph(sub['title'], head3_style))
-
-            tbl_data = [["#", "Inspection Item", "Ans", "Remarks", "Person(s) Responsible"]]
-            for i, item in enumerate(sub['items'], 1):
-                resp    = responses.get(item['id'], {})
-                ans     = resp.get('answer', '---').upper()
-                remark  = resp.get('remark', '')
-                persons = resp.get('person_responsible', '') if ans == 'NO' else ''
-                ans_color = green if ans == 'YES' else (red if ans == 'NO' else black)
-
-                tbl_data.append([
-                    Paragraph(str(i), small_style),
+            sub_rows = []
+            for item in sub['items']:
+                resp = responses.get(item['id'], {})
+                if resp.get('answer') not in ('yes','no'):
+                    continue
+                ans     = resp['answer'].upper()
+                remark  = resp.get('remark','')
+                action  = resp.get('action_by','') if ans == 'NO' else ''
+                ans_color = green if ans == 'YES' else red
+                sub_rows.append([
                     Paragraph(item['label'], body_style),
-                    Paragraph(f"<b>{ans}</b>", ParagraphStyle('ans', fontSize=8, fontName='Helvetica-Bold', textColor=ans_color, alignment=TA_CENTER)),
+                    Paragraph(f"<b>{ans}</b>", ParagraphStyle('an', fontSize=8, fontName='Helvetica-Bold', textColor=ans_color, alignment=TA_CENTER)),
                     Paragraph(remark or '', remark_style),
-                    Paragraph(persons or '', ParagraphStyle('pers', fontSize=7.5, fontName='Helvetica-Bold', textColor=colors.HexColor('#1a3060'), leading=11)),
+                    Paragraph(action or '', action_style),
                 ])
+            if sub_rows:
+                sec_rows.append((sub['title'], sub_rows))
 
-            col_w = [0.8*cm, 7.8*cm, 1.6*cm, 3.8*cm, 3.4*cm]
+        if not sec_rows:
+            continue
+
+        story.append(Paragraph(f"{section['icon']}  {section['title'].upper()}", head2_style))
+        story.append(HRFlowable(width=W, thickness=1.5, color=saffron, spaceAfter=5))
+
+        for sub_title, rows in sec_rows:
+            story.append(Paragraph(sub_title, head3_style))
+            tbl_data = [[
+                Paragraph("Inspection Point", ParagraphStyle('hb', fontSize=8, fontName='Helvetica-Bold', textColor=white)),
+                Paragraph("Status",           ParagraphStyle('hb2',fontSize=8, fontName='Helvetica-Bold', textColor=white, alignment=TA_CENTER)),
+                Paragraph("Remarks",          ParagraphStyle('hb3',fontSize=8, fontName='Helvetica-Bold', textColor=white)),
+                Paragraph("Action By",        ParagraphStyle('hb4',fontSize=8, fontName='Helvetica-Bold', textColor=white)),
+            ]] + rows
+            col_w = [8.4*cm, 1.6*cm, 3.8*cm, 3.2*cm]
             tbl = Table(tbl_data, colWidths=col_w, repeatRows=1)
             tbl.setStyle(TableStyle([
-                ('BACKGROUND',    (0,0), (-1,0), navy),
-                ('TEXTCOLOR',     (0,0), (-1,0), white),
-                ('FONTNAME',      (0,0), (-1,0), 'Helvetica-Bold'),
-                ('FONTSIZE',      (0,0), (-1,0), 8),
-                ('ALIGN',         (0,0), (0,-1), 'CENTER'),
-                ('ALIGN',         (2,0), (2,-1), 'CENTER'),
-                ('VALIGN',        (0,0), (-1,-1), 'TOP'),
-                ('ROWBACKGROUNDS',(0,1), (-1,-1), [white, lgray]),
-                ('GRID',          (0,0), (-1,-1), 0.4, mgray),
-                ('TOPPADDING',    (0,0), (-1,-1), 4),
-                ('BOTTOMPADDING', (0,0), (-1,-1), 4),
-                ('LEFTPADDING',   (0,0), (-1,-1), 5),
-                ('LINEBELOW',     (0,-1), (-1,-1), 1, steel),
+                ('BACKGROUND',    (0,0),(-1,0), navy),
+                ('TEXTCOLOR',     (0,0),(-1,0), white),
+                ('VALIGN',        (0,0),(-1,-1), 'TOP'),
+                ('ROWBACKGROUNDS',(0,1),(-1,-1), [white, lgray]),
+                ('GRID',          (0,0),(-1,-1), 0.4, mgray),
+                ('TOPPADDING',    (0,0),(-1,-1), 4),
+                ('BOTTOMPADDING', (0,0),(-1,-1), 4),
+                ('LEFTPADDING',   (0,0),(-1,-1), 5),
+                ('ALIGN',         (1,0),(1,-1), 'CENTER'),
+                ('LINEBELOW',     (0,-1),(-1,-1), 1, steel),
             ]))
             story.append(tbl)
-            story.append(Spacer(1, 0.3*cm))
+            story.append(Spacer(1, 0.25*cm))
 
-    # ── Signature block ──
+    # 5. Other Remarks / Observations
+    if other_remarks and other_remarks.strip():
+        story.append(Spacer(1, 0.4*cm))
+        story.append(Paragraph("OTHER REMARKS / OBSERVATIONS", head2_style))
+        story.append(HRFlowable(width=W, thickness=1, color=saffron, spaceAfter=6))
+        story.append(Paragraph(other_remarks.strip(), obs_style))
+
+    # 6. Copy To section
+    auto_names = collect_copy_to(header, responses)
+    extra_names = [n.strip() for n in extra_copy_to.split(',') if n.strip()] if extra_copy_to else []
+    all_copy = auto_names + [n for n in extra_names if n not in auto_names]
+
+    if all_copy:
+        story.append(Spacer(1, 0.5*cm))
+        story.append(Paragraph("COPY TO", head2_style))
+        story.append(HRFlowable(width=W, thickness=1, color=saffron, spaceAfter=6))
+        for name in all_copy:
+            story.append(Paragraph(f"• <b>{name}</b> — For information and necessary action.", copy_style))
+
+    # 7. Signature block — shows designation
     story.append(Spacer(1, 0.8*cm))
     sig_data = [
-        ["Inspector's Signature", "Date & Time of Inspection"],
-        ["\n\n" + "_"*35, datetime.now().strftime("%d-%m-%Y  %H:%M")],
+        ["Date & Time of Inspection", desig],
+        [datetime.now().strftime("%d-%m-%Y  %H:%M"), "\n\n" + "_"*30],
     ]
     sig_tbl = Table(sig_data, colWidths=[W/2, W/2])
     sig_tbl.setStyle(TableStyle([
-        ('FONTNAME',  (0,0), (-1,0), 'Helvetica-Bold'),
-        ('FONTSIZE',  (0,0), (-1,-1), 8.5),
-        ('ALIGN',     (0,0), (-1,-1), 'CENTER'),
-        ('GRID',      (0,0), (-1,-1), 0.5, mgray),
-        ('BACKGROUND',(0,0), (-1,0), lgray),
-        ('TOPPADDING',(0,0), (-1,-1), 5),
-        ('BOTTOMPADDING',(0,0), (-1,-1), 12),
+        ('FONTNAME',     (0,0),(-1,0), 'Helvetica-Bold'),
+        ('FONTSIZE',     (0,0),(-1,-1), 8.5),
+        ('ALIGN',        (0,0),(-1,-1), 'CENTER'),
+        ('GRID',         (0,0),(-1,-1), 0.5, mgray),
+        ('BACKGROUND',   (0,0),(-1,0), lgray),
+        ('TOPPADDING',   (0,0),(-1,-1), 5),
+        ('BOTTOMPADDING',(0,0),(-1,-1), 12),
     ]))
     story.append(sig_tbl)
 
@@ -175,12 +213,11 @@ def generate_pdf(header, responses):
     return buf
 
 
-# ── DOCX generation ───────────────────────────────────────────────────────────
-def generate_docx(header, responses):
+# ── DOCX ──────────────────────────────────────────────────────────────────────
+def generate_docx(header, responses, other_remarks='', extra_copy_to=''):
     from docx import Document
     from docx.shared import Pt, Cm, RGBColor
     from docx.enum.text import WD_ALIGN_PARAGRAPH
-    from docx.enum.table import WD_ALIGN_VERTICAL
     from docx.oxml.ns import qn
     from docx.oxml import OxmlElement
 
@@ -194,112 +231,139 @@ def generate_docx(header, responses):
         tcPr.append(shd)
 
     doc = Document()
-    # Page margins
-    for section in doc.sections:
-        section.left_margin   = Cm(2)
-        section.right_margin  = Cm(2)
-        section.top_margin    = Cm(2)
-        section.bottom_margin = Cm(2)
+    for sec in doc.sections:
+        sec.left_margin = sec.right_margin = Cm(2)
+        sec.top_margin = sec.bottom_margin = Cm(2)
 
     # Title
-    title = doc.add_heading('', 0)
-    run = title.add_run('MECHANICAL DEPARTMENT INSPECTION REPORT')
-    run.font.color.rgb = RGBColor(0x0a, 0x16, 0x28)
-    run.font.size = Pt(16)
-    title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    t = doc.add_heading('', 0)
+    r = t.add_run('MECHANICAL DEPARTMENT INSPECTION REPORT')
+    r.font.color.rgb = RGBColor(0x0a, 0x16, 0x28)
+    r.font.size = Pt(14)
+    t.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    sub = doc.add_paragraph('Office of Sr. DME (Co.) BCT · Western Railway · Mumbai Central')
-    sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    sub.runs[0].font.color.rgb = RGBColor(0x3a, 0x7b, 0xd5)
-    sub.runs[0].font.size = Pt(10)
+    s = doc.add_paragraph('Office of Sr. DME (Co.) BCT · Western Railway · Mumbai Central')
+    s.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    s.runs[0].font.color.rgb = RGBColor(0x3a, 0x7b, 0xd5)
+    s.runs[0].font.size = Pt(9)
 
     doc.add_paragraph()
 
-    # Header table
-    tbl = doc.add_table(rows=3, cols=4)
-    tbl.style = 'Table Grid'
-    fields = [
-        ("Inspector Name:", header.get('name',''),       "Designation:",    header.get('designation','')),
-        ("Location:",       header.get('location',''),   "Date:",           header.get('date','')),
-        ("Inspection Type:",header.get('insp_type',''),  "Division:",        "BCT / Western Railway"),
-    ]
-    for r, (l1, v1, l2, v2) in enumerate(fields):
-        row = tbl.rows[r]
-        for ci, txt in enumerate([l1, v1, l2, v2]):
-            cell = row.cells[ci]
-            cell.text = txt
-            run = cell.paragraphs[0].runs[0]
-            run.font.size = Pt(9)
-            if ci in (0, 2):
-                run.bold = True
-                run.font.color.rgb = RGBColor(0x0a, 0x16, 0x28)
+    # Inspection line
+    loc   = header.get('location','')
+    date  = header.get('date','')
+    name  = header.get('name','')
+    desig = header.get('designation','')
+    itype = header.get('insp_type','')
+    intro = doc.add_paragraph()
+    intro.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    run_i = intro.add_run(f"Inspection of {loc} on {date} by {name} ({desig})")
+    run_i.bold = True
+    run_i.font.size = Pt(11)
+    run_i.font.color.rgb = RGBColor(0x0a, 0x16, 0x28)
+    if itype:
+        intro.add_run(f"\nType: {itype}").font.size = Pt(9)
 
     doc.add_paragraph()
 
     # Score
-    total_yes = sum(1 for v in responses.values() if v.get('answer') == 'yes')
-    total_no  = sum(1 for v in responses.values() if v.get('answer') == 'no')
+    ans_resp  = answered_items(responses)
+    total_yes = sum(1 for v in ans_resp.values() if v.get('answer') == 'yes')
+    total_no  = sum(1 for v in ans_resp.values() if v.get('answer') == 'no')
     total_ans = total_yes + total_no
     pct = round(100 * total_yes / total_ans) if total_ans else 0
-
-    score_p = doc.add_paragraph()
-    score_p.add_run(f'COMPLIANCE SUMMARY: ').bold = True
-    score_p.add_run(f'Total Answered: {total_ans}  |  Compliant (Yes): {total_yes}  |  Non-Compliant (No): {total_no}  |  Compliance: {pct}%')
-    score_p.runs[0].bold = True
-
+    sc = doc.add_paragraph()
+    sc.add_run('COMPLIANCE SUMMARY: ').bold = True
+    sc.add_run(f'Items Inspected: {total_ans}  |  Satisfactory: {total_yes}  |  Deficiencies: {total_no}  |  Compliance: {pct}%')
     doc.add_paragraph()
 
-    # Sections
+    # Sections — only answered items
     for section in SECTIONS:
+        has_content = False
+        for sub in section['subsections']:
+            for item in sub['items']:
+                resp = responses.get(item['id'], {})
+                if resp.get('answer') in ('yes','no'):
+                    has_content = True
+                    break
+        if not has_content:
+            continue
+
         doc.add_heading(f"{section['icon']} {section['title']}", level=1)
         for sub in section['subsections']:
+            sub_rows = []
+            for item in sub['items']:
+                resp = responses.get(item['id'], {})
+                if resp.get('answer') not in ('yes','no'):
+                    continue
+                sub_rows.append((item, resp))
+            if not sub_rows:
+                continue
+
             doc.add_heading(sub['title'], level=2)
             tbl2 = doc.add_table(rows=1, cols=4)
             tbl2.style = 'Table Grid'
             hdr_cells = tbl2.rows[0].cells
-            for ci, hd in enumerate(['#', 'Inspection Item', 'Answer', 'Remarks']):
+            for ci, hd in enumerate(['Inspection Point', 'Status', 'Remarks', 'Action By']):
                 hdr_cells[ci].text = hd
                 hdr_cells[ci].paragraphs[0].runs[0].bold = True
                 hdr_cells[ci].paragraphs[0].runs[0].font.size = Pt(8)
                 set_cell_bg(hdr_cells[ci], '0a1628')
                 hdr_cells[ci].paragraphs[0].runs[0].font.color.rgb = RGBColor(0xff, 0xff, 0xff)
 
-            for i, item in enumerate(sub['items'], 1):
-                resp   = responses.get(item['id'], {})
-                ans    = resp.get('answer', '—').upper()
-                remark = resp.get('remark', '')
+            for i, (item, resp) in enumerate(sub_rows, 1):
+                ans    = resp['answer'].upper()
+                remark = resp.get('remark','')
+                action = resp.get('action_by','') if ans == 'NO' else ''
                 row = tbl2.add_row().cells
-                row[0].text = str(i)
-                row[1].text = item['label']
-                row[2].text = ans
-                row[3].text = remark
+                row[0].text = item['label']
+                row[1].text = ans
+                row[2].text = remark
+                row[3].text = action
                 for ci in range(4):
                     row[ci].paragraphs[0].runs[0].font.size = Pt(8)
-                run2 = row[2].paragraphs[0].runs[0]
+                run2 = row[1].paragraphs[0].runs[0]
                 run2.bold = True
                 if ans == 'YES':
                     run2.font.color.rgb = RGBColor(0x16, 0xa3, 0x4a)
                 elif ans == 'NO':
                     run2.font.color.rgb = RGBColor(0xdc, 0x26, 0x26)
+                if action:
+                    row[3].paragraphs[0].runs[0].bold = True
+                    row[3].paragraphs[0].runs[0].font.color.rgb = RGBColor(0x0a, 0x16, 0x28)
                 if i % 2 == 0:
                     for ci in range(4):
                         set_cell_bg(row[ci], 'f5f5f5')
-
-            # Column widths
-            for ri, row in enumerate(tbl2.rows):
-                for ci, width in enumerate([0.8, 8.5, 1.8, 4.4]):
-                    row.cells[ci].width = Cm(width)
+            for row in tbl2.rows:
+                for ci, w in enumerate([9.5, 1.8, 3.5, 3.0]):
+                    row.cells[ci].width = Cm(w)
             doc.add_paragraph()
 
-    # Signature
+    # Other Remarks
+    if other_remarks and other_remarks.strip():
+        doc.add_heading('OTHER REMARKS / OBSERVATIONS', level=1)
+        doc.add_paragraph(other_remarks.strip())
+
+    # Copy To
+    auto_names  = collect_copy_to(header, responses)
+    extra_names = [n.strip() for n in extra_copy_to.split(',') if n.strip()] if extra_copy_to else []
+    all_copy    = auto_names + [n for n in extra_names if n not in auto_names]
+    if all_copy:
+        doc.add_heading('COPY TO', level=1)
+        for cname in all_copy:
+            p = doc.add_paragraph()
+            p.add_run(f"{cname}").bold = True
+            p.add_run(" — For information and necessary action.")
+
+    # Signature — designation
     doc.add_paragraph()
     sig_tbl = doc.add_table(rows=2, cols=2)
     sig_tbl.style = 'Table Grid'
-    for ci, hd in enumerate(["Inspector's Signature", "Date & Time of Inspection"]):
+    for ci, hd in enumerate(["Date & Time of Inspection", desig]):
         sig_tbl.rows[0].cells[ci].text = hd
         sig_tbl.rows[0].cells[ci].paragraphs[0].runs[0].bold = True
         sig_tbl.rows[0].cells[ci].paragraphs[0].runs[0].font.size = Pt(8)
-    sig_tbl.rows[1].cells[1].text = datetime.now().strftime("%d-%m-%Y  %H:%M")
+    sig_tbl.rows[1].cells[0].text = datetime.now().strftime("%d-%m-%Y  %H:%M")
 
     buf = io.BytesIO()
     doc.save(buf)
@@ -307,27 +371,28 @@ def generate_docx(header, responses):
     return buf
 
 
-# ── WhatsApp summary ──────────────────────────────────────────────────────────
-def generate_whatsapp(header, responses):
-    total_yes = sum(1 for v in responses.values() if v.get('answer') == 'yes')
-    total_no  = sum(1 for v in responses.values() if v.get('answer') == 'no')
+# ── WhatsApp ──────────────────────────────────────────────────────────────────
+def generate_whatsapp(header, responses, other_remarks='', extra_copy_to=''):
+    ans_resp  = answered_items(responses)
+    total_yes = sum(1 for v in ans_resp.values() if v.get('answer') == 'yes')
+    total_no  = sum(1 for v in ans_resp.values() if v.get('answer') == 'no')
     total_ans = total_yes + total_no
     pct = round(100 * total_yes / total_ans) if total_ans else 0
 
+    loc   = header.get('location','')
+    date  = header.get('date','')
+    name  = header.get('name','')
+    desig = header.get('designation','')
+
     lines = [
-        "🚂 *MECHANICAL DEPT INSPECTION REPORT*",
-        f"📍 *Location:* {header.get('location','')}",
-        f"👤 *Inspector:* {header.get('name','')} ({header.get('designation','')})",
-        f"📅 *Date:* {header.get('date','')}",
-        f"🔍 *Type:* {header.get('insp_type','')}",
+        f"*Inspection of {loc} on {date} by {name} ({desig})*",
         "",
-        "📊 *COMPLIANCE SUMMARY*",
-        f"✅ Compliant (Yes): {total_yes}",
-        f"❌ Non-Compliant (No): {total_no}",
-        f"📈 Compliance: *{pct}%*",
+        "*COMPLIANCE SUMMARY*",
+        f"Items Inspected: {total_ans}  |  Satisfactory: {total_yes}  |  Deficiencies: {total_no}  |  Compliance: {pct}%",
         "",
-        "⚠️ *NON-COMPLIANT ITEMS:*",
+        "*DEFICIENCIES NOTED:*",
     ]
+
     nc_count = 0
     for section in SECTIONS:
         for sub in section['subsections']:
@@ -335,14 +400,27 @@ def generate_whatsapp(header, responses):
                 resp = responses.get(item['id'], {})
                 if resp.get('answer') == 'no':
                     nc_count += 1
-                    remark = resp.get('remark', '')
-                    remark_str = f" | Remark: {remark}" if remark else ""
-                    persons_str = f" | Responsible: {resp.get('person_responsible','')}" if resp.get('person_responsible') else ""
-                    lines.append(f"• {item['label'][:70]}{remark_str}{persons_str}")
+                    remark = resp.get('remark','')
+                    action = resp.get('action_by','')
+                    line = f"• {item['label'][:80]}"
+                    if remark: line += f"\n  Remark: {remark}"
+                    if action: line += f"\n  Action By: {action}"
+                    lines.append(line)
     if nc_count == 0:
-        lines.append("None — Full Compliance ✅")
+        lines.append("Nil — Full Compliance")
 
-    lines += ["", f"_Generated by Mech Inspection App · BCT Division · {datetime.now().strftime('%d-%m-%Y %H:%M')}_"]
+    if other_remarks and other_remarks.strip():
+        lines += ["", "*OTHER REMARKS / OBSERVATIONS:*", other_remarks.strip()]
+
+    auto_names  = collect_copy_to(header, responses)
+    extra_names = [n.strip() for n in extra_copy_to.split(',') if n.strip()] if extra_copy_to else []
+    all_copy    = auto_names + [n for n in extra_names if n not in auto_names]
+    if all_copy:
+        lines += ["", "*COPY TO:*"]
+        for cname in all_copy:
+            lines.append(f"• {cname} — For information and necessary action.")
+
+    lines += ["", f"_{datetime.now().strftime('%d-%m-%Y %H:%M')}_"]
     return "\n".join(lines)
 
 
@@ -353,7 +431,6 @@ def index():
 
 @app.route('/checklist')
 def checklist():
-    import json
     sections_json = json.dumps(SECTIONS)
     return render_template('checklist.html', sections_json=sections_json)
 
@@ -368,8 +445,9 @@ def submit():
 def summary():
     header    = session.get('header', {})
     responses = session.get('responses', {})
-    total_yes = sum(1 for v in responses.values() if v.get('answer') == 'yes')
-    total_no  = sum(1 for v in responses.values() if v.get('answer') == 'no')
+    ans_resp  = answered_items(responses)
+    total_yes = sum(1 for v in ans_resp.values() if v.get('answer') == 'yes')
+    total_no  = sum(1 for v in ans_resp.values() if v.get('answer') == 'no')
     total_ans = total_yes + total_no
     pct = round(100 * total_yes / total_ans) if total_ans else 0
     nc_items = []
@@ -379,32 +457,47 @@ def summary():
                 resp = responses.get(item['id'], {})
                 if resp.get('answer') == 'no':
                     nc_items.append({
-                        'label': item['label'],
-                        'remark': resp.get('remark',''),
+                        'label':   item['label'],
+                        'remark':  resp.get('remark',''),
                         'section': section['title'],
-                        'persons': resp.get('person_responsible','')
+                        'action_by': resp.get('action_by','')
                     })
-    whatsapp = generate_whatsapp(header, responses)
+    auto_copy = collect_copy_to(header, responses)
     return render_template('summary.html',
                            header=header,
-                           total_yes=total_yes, total_no=total_no, total_ans=total_ans, pct=pct,
-                           nc_items=nc_items, whatsapp=whatsapp)
+                           total_yes=total_yes, total_no=total_no,
+                           total_ans=total_ans, pct=pct,
+                           nc_items=nc_items,
+                           auto_copy=auto_copy)
 
-@app.route('/download/pdf')
+@app.route('/download/pdf', methods=['POST'])
 def download_pdf():
-    header    = session.get('header', {})
-    responses = session.get('responses', {})
-    buf = generate_pdf(header, responses)
+    header         = session.get('header', {})
+    responses      = session.get('responses', {})
+    other_remarks  = request.form.get('other_remarks', '')
+    extra_copy_to  = request.form.get('extra_copy_to', '')
+    buf  = generate_pdf(header, responses, other_remarks, extra_copy_to)
+    wa   = generate_whatsapp(header, responses, other_remarks, extra_copy_to)
+    session['whatsapp'] = wa
     fname = f"Inspection_{header.get('location','BCT').replace(' ','_')}_{header.get('date','').replace('-','')}.pdf"
     return send_file(buf, as_attachment=True, download_name=fname, mimetype='application/pdf')
 
-@app.route('/download/docx')
+@app.route('/download/docx', methods=['POST'])
 def download_docx():
-    header    = session.get('header', {})
-    responses = session.get('responses', {})
-    buf = generate_docx(header, responses)
+    header         = session.get('header', {})
+    responses      = session.get('responses', {})
+    other_remarks  = request.form.get('other_remarks', '')
+    extra_copy_to  = request.form.get('extra_copy_to', '')
+    buf  = generate_docx(header, responses, other_remarks, extra_copy_to)
+    wa   = generate_whatsapp(header, responses, other_remarks, extra_copy_to)
+    session['whatsapp'] = wa
     fname = f"Inspection_{header.get('location','BCT').replace(' ','_')}_{header.get('date','').replace('-','')}.docx"
     return send_file(buf, as_attachment=True, download_name=fname, mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+
+@app.route('/whatsapp')
+def whatsapp_page():
+    wa = session.get('whatsapp', '')
+    return render_template('whatsapp.html', whatsapp=wa)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
