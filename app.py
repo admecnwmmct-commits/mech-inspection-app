@@ -25,7 +25,7 @@ def collect_copy_to(header, responses):
     return names
 
 # ── PDF ───────────────────────────────────────────────────────────────────────
-def generate_pdf(header, responses, other_remarks='', extra_copy_to=''):
+def generate_pdf(header, responses, other_remarks='', extra_copy_to='', bw=False):
     from reportlab.lib.pagesizes import A4
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib.units import cm
@@ -38,15 +38,26 @@ def generate_pdf(header, responses, other_remarks='', extra_copy_to=''):
                             leftMargin=2*cm, rightMargin=2*cm,
                             topMargin=2*cm, bottomMargin=2*cm)
 
-    navy   = colors.HexColor('#0a1628')
-    saffron= colors.HexColor('#f4a014')
-    steel  = colors.HexColor('#3a7bd5')
-    lgray  = colors.HexColor('#f5f5f5')
-    mgray  = colors.HexColor('#d0d0d0')
-    green  = colors.HexColor('#16a34a')
-    red    = colors.HexColor('#dc2626')
-    white  = colors.white
-    black  = colors.black
+    if bw:
+        navy   = colors.black
+        saffron= colors.black
+        steel  = colors.HexColor('#444444')
+        lgray  = colors.HexColor('#f0f0f0')
+        mgray  = colors.HexColor('#cccccc')
+        green  = colors.black
+        red    = colors.black
+        white  = colors.white
+        black  = colors.black
+    else:
+        navy   = colors.HexColor('#0a1628')
+        saffron= colors.HexColor('#f4a014')
+        steel  = colors.HexColor('#3a7bd5')
+        lgray  = colors.HexColor('#f5f5f5')
+        mgray  = colors.HexColor('#d0d0d0')
+        green  = colors.HexColor('#16a34a')
+        red    = colors.HexColor('#dc2626')
+        white  = colors.white
+        black  = colors.black
     W = 17*cm
 
     title_style   = ParagraphStyle('T',  fontSize=13, fontName='Helvetica-Bold', textColor=white,  alignment=TA_CENTER, spaceAfter=3)
@@ -201,12 +212,19 @@ def generate_pdf(header, responses, other_remarks='', extra_copy_to=''):
 
 
 # ── DOCX ──────────────────────────────────────────────────────────────────────
-def generate_docx(header, responses, other_remarks='', extra_copy_to=''):
+def generate_docx(header, responses, other_remarks='', extra_copy_to='', bw=False):
     from docx import Document
     from docx.shared import Pt, Cm, RGBColor
     from docx.enum.text import WD_ALIGN_PARAGRAPH
     from docx.oxml.ns import qn
     from docx.oxml import OxmlElement
+
+    hdr_bg  = 'ffffff' if bw else '0a1628'
+    hdr_txt = RGBColor(0,0,0) if bw else RGBColor(0xff,0xff,0xff)
+    yes_clr = RGBColor(0,0,0) if bw else RGBColor(0x16,0xa3,0x4a)
+    no_clr  = RGBColor(0,0,0) if bw else RGBColor(0xdc,0x26,0x26)
+    ttl_clr = RGBColor(0,0,0) if bw else RGBColor(0x0a,0x16,0x28)
+    sub_clr = RGBColor(0,0,0) if bw else RGBColor(0x3a,0x7b,0xd5)
 
     def set_cell_bg(cell, hex_color):
         tc = cell._tc
@@ -281,8 +299,8 @@ def generate_docx(header, responses, other_remarks='', extra_copy_to=''):
                 hdr_cells[ci].text = hd
                 hdr_cells[ci].paragraphs[0].runs[0].bold = True
                 hdr_cells[ci].paragraphs[0].runs[0].font.size = Pt(8)
-                set_cell_bg(hdr_cells[ci], '0a1628')
-                hdr_cells[ci].paragraphs[0].runs[0].font.color.rgb = RGBColor(0xff, 0xff, 0xff)
+                set_cell_bg(hdr_cells[ci], hdr_bg)
+                hdr_cells[ci].paragraphs[0].runs[0].font.color.rgb = hdr_txt
 
             for i, (item, resp) in enumerate(sub_rows, 1):
                 ans    = resp['answer'].upper()
@@ -298,9 +316,9 @@ def generate_docx(header, responses, other_remarks='', extra_copy_to=''):
                 run2 = row[1].paragraphs[0].runs[0]
                 run2.bold = True
                 if ans == 'YES':
-                    run2.font.color.rgb = RGBColor(0x16, 0xa3, 0x4a)
+                    run2.font.color.rgb = yes_clr
                 elif ans == 'NO':
-                    run2.font.color.rgb = RGBColor(0xdc, 0x26, 0x26)
+                    run2.font.color.rgb = no_clr
                 if action:
                     row[3].paragraphs[0].runs[0].bold = True
                     row[3].paragraphs[0].runs[0].font.color.rgb = RGBColor(0x0a, 0x16, 0x28)
@@ -345,7 +363,7 @@ def generate_docx(header, responses, other_remarks='', extra_copy_to=''):
 
 
 # ── WhatsApp ──────────────────────────────────────────────────────────────────
-def generate_whatsapp(header, responses, other_remarks='', extra_copy_to=''):
+def generate_whatsapp(header, responses, other_remarks='', extra_copy_to='', bw=False):
     ans_resp  = answered_items(responses)
     total_yes = sum(1 for v in ans_resp.values() if v.get('answer') == 'yes')
     total_no  = sum(1 for v in ans_resp.values() if v.get('answer') == 'no')
@@ -449,7 +467,8 @@ def download_pdf():
     responses      = session.get('responses', {})
     other_remarks  = request.form.get('other_remarks', '')
     extra_copy_to  = request.form.get('extra_copy_to', '')
-    buf  = generate_pdf(header, responses, other_remarks, extra_copy_to)
+    bw   = request.form.get('bw','0') == '1'
+    buf  = generate_pdf(header, responses, other_remarks, extra_copy_to, bw)
     wa   = generate_whatsapp(header, responses, other_remarks, extra_copy_to)
     session['whatsapp'] = wa
     fname = f"Inspection_{header.get('location','BCT').replace(' ','_')}_{header.get('date','').replace('-','')}.pdf"
@@ -461,7 +480,8 @@ def download_docx():
     responses      = session.get('responses', {})
     other_remarks  = request.form.get('other_remarks', '')
     extra_copy_to  = request.form.get('extra_copy_to', '')
-    buf  = generate_docx(header, responses, other_remarks, extra_copy_to)
+    bw   = request.form.get('bw','0') == '1'
+    buf  = generate_docx(header, responses, other_remarks, extra_copy_to, bw)
     wa   = generate_whatsapp(header, responses, other_remarks, extra_copy_to)
     session['whatsapp'] = wa
     fname = f"Inspection_{header.get('location','BCT').replace(' ','_')}_{header.get('date','').replace('-','')}.docx"
