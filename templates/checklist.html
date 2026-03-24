@@ -36,11 +36,11 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--navy);color:var(--w
 .yn-btn.no.active{background:rgba(239,68,68,0.15);border-color:var(--red);color:var(--red);}
 .remark-input{flex:1;min-width:140px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;padding:5px 10px;color:var(--white);font-size:12px;font-family:'IBM Plex Sans',sans-serif;outline:none;}
 .remark-input::placeholder{color:var(--muted);}
-.person-row{display:none;margin-top:6px;}
-.person-row.visible{display:flex;align-items:center;gap:6px;}
-.person-input{flex:1;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);border-radius:6px;padding:5px 10px;color:var(--white);font-size:12px;font-family:'IBM Plex Sans',sans-serif;outline:none;}
-.person-input::placeholder{color:rgba(239,68,68,0.5);}
-.person-label{font-size:11px;color:var(--red);white-space:nowrap;font-weight:600;}
+.action-row{display:none;margin-top:6px;}
+.action-row.visible{display:flex;align-items:center;gap:6px;}
+.action-input{flex:1;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);border-radius:6px;padding:5px 10px;color:var(--white);font-size:12px;font-family:'IBM Plex Sans',sans-serif;outline:none;}
+.action-input::placeholder{color:rgba(239,68,68,0.5);}
+.action-label{font-size:11px;color:var(--red);white-space:nowrap;font-weight:600;}
 .nav-footer{position:fixed;bottom:0;left:0;right:0;background:var(--navy-mid);border-top:1px solid var(--border);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;z-index:100;}
 .btn-nav{padding:9px 22px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;border:none;}
 .btn-prev{background:rgba(255,255,255,0.07);color:var(--white);border:1px solid var(--border);}
@@ -121,11 +121,11 @@ function buildUI(){
         ctrl.appendChild(yBtn);ctrl.appendChild(nBtn);ctrl.appendChild(rmk);
         row.appendChild(ctrl);
         var pr=document.createElement('div');
-        pr.className='person-row';pr.id='person_row_'+item.id;
-        var pl=document.createElement('span');pl.className='person-label';pl.textContent='Person(s) responsible:';
-        var pi=document.createElement('input');pi.className='person-input';pi.type='text';
-        pi.placeholder='Name(s) responsible for compliance (comma separated)';
-        (function(id,inp){inp.oninput=function(){if(!responses[id])responses[id]={};responses[id].person_responsible=inp.value;};})(item.id,pi);
+        pr.className='action-row';pr.id='action_row_'+item.id;
+        var pl=document.createElement('span');pl.className='action-label';pl.textContent='Action By:';
+        var pi=document.createElement('input');pi.className='action-input';pi.type='text';
+        pi.placeholder='Action By (name/designation, comma separated for multiple)';
+        (function(id,inp){inp.oninput=function(){if(!responses[id])responses[id]={};responses[id].action_by=inp.value;};})(item.id,pi);
         pr.appendChild(pl);pr.appendChild(pi);
         row.appendChild(pr);subDiv.appendChild(row);
       }
@@ -141,9 +141,9 @@ function setAnswer(id,ans,ab,ob,row){
   ab.classList.add('active');ob.classList.remove('active');
   row.classList.remove('answered-yes','answered-no');
   row.classList.add(ans==='yes'?'answered-yes':'answered-no');
-  var pr=document.getElementById('person_row_'+id);
-  if(pr){pr.className=ans==='no'?'person-row visible':'person-row';}
-  if(ans==='yes'){responses[id].person_responsible='';}
+  var pr=document.getElementById('action_row_'+id);
+  if(pr){pr.className=ans==='no'?'action-row visible':'action-row';}
+  if(ans==='yes'){responses[id].action_by='';}
   updateProgress();
 }
 function setRemark(id,val){if(!responses[id])responses[id]={};responses[id].remark=val;}

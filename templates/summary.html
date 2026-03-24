@@ -10,144 +10,192 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'IBM Plex Sans',sans-serif;background:var(--navy);color:var(--white);min-height:100vh;padding:28px 20px 60px;}
 .container{max-width:760px;margin:0 auto;}
-.page-title{font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;margin-bottom:4px;}
-.page-sub{font-size:13px;color:var(--muted);margin-bottom:28px;}
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px;}
-.kpi-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;}
-.kpi-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
-.kpi-val{font-family:'Rajdhani',sans-serif;font-size:38px;font-weight:700;line-height:1;}
+.page-title{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;margin-bottom:3px;}
+.page-sub{font-size:13px;color:var(--muted);margin-bottom:24px;}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:28px;}
+.kpi-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;}
+.kpi-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
+.kpi-val{font-family:'Rajdhani',sans-serif;font-size:34px;font-weight:700;line-height:1;}
 .green{color:var(--green);}
 .red{color:var(--red);}
-.saffron{color:var(--saffron);}
+.amber{color:var(--saffron);}
+.section-title{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--saffron);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.section-title::before{content:'';display:block;width:3px;height:14px;background:var(--saffron);border-radius:2px;}
 
-.section-title{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--saffron);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-.section-title::before{content:'';display:block;width:3px;height:15px;background:var(--saffron);border-radius:2px;}
-
-/* Download buttons */
-.download-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px;}
-.dl-btn{display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px 12px;border-radius:12px;text-decoration:none;border:1px solid var(--border);background:var(--card);transition:all .15s;cursor:pointer;}
-.dl-btn:hover{background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.18);transform:translateY(-2px);}
-.dl-icon{font-size:28px;}
-.dl-label{font-size:13px;font-weight:600;color:var(--white);}
-.dl-sub{font-size:11px;color:var(--muted);}
-.dl-btn.pdf{border-color:rgba(239,68,68,0.3);}
-.dl-btn.docx{border-color:rgba(58,123,213,0.3);}
-.dl-btn.wa{border-color:rgba(34,197,94,0.3);}
+/* Download form */
+.download-form{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:28px;}
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:11px;font-weight:600;color:var(--saffron);letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px;}
+.field textarea,.field input[type=text]{width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--white);font-size:13px;font-family:'IBM Plex Sans',sans-serif;outline:none;resize:vertical;}
+.field textarea:focus,.field input[type=text]:focus{border-color:rgba(244,160,20,0.4);}
+.field textarea::placeholder,.field input[type=text]::placeholder{color:var(--muted);}
+.copy-hint{font-size:11px;color:var(--muted);margin-top:5px;}
+.copy-hint b{color:var(--steel-light,#5a9bf5);}
+.dl-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:20px;}
+.dl-btn{padding:12px 8px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;border:none;text-align:center;transition:all .15s;}
+.dl-pdf{background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);}
+.dl-pdf:hover{background:rgba(239,68,68,0.25);}
+.dl-docx{background:rgba(58,123,213,0.15);color:#5a9bf5;border:1px solid rgba(58,123,213,0.3);}
+.dl-docx:hover{background:rgba(58,123,213,0.25);}
+.dl-wa{background:rgba(34,197,94,0.12);color:var(--green);border:1px solid rgba(34,197,94,0.25);cursor:pointer;}
+.dl-wa:hover{background:rgba(34,197,94,0.2);}
 
 /* NC items */
 .nc-list{display:flex;flex-direction:column;gap:8px;margin-bottom:28px;}
-.nc-item{background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:12px 16px;}
-.nc-item-label{font-size:13px;color:var(--white);margin-bottom:3px;}
-.nc-item-meta{font-size:11.5px;color:var(--muted);}
-.nc-item-remark{font-size:12px;color:var(--saffron);margin-top:4px;font-style:italic;}
+.nc-item{background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:12px 14px;}
+.nc-label{font-size:13px;color:var(--white);margin-bottom:3px;line-height:1.4;}
+.nc-meta{font-size:11px;color:var(--muted);margin-bottom:2px;}
+.nc-remark{font-size:12px;color:var(--saffron);margin-top:3px;font-style:italic;}
+.nc-action{font-size:12px;color:var(--green);margin-top:3px;font-weight:600;}
 .no-nc{font-size:14px;color:var(--green);padding:16px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:10px;text-align:center;}
 
-/* WhatsApp box */
-.wa-box{background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.2);border-radius:12px;padding:20px;margin-bottom:28px;}
-.wa-text{font-family:monospace;font-size:12px;color:var(--white);white-space:pre-wrap;line-height:1.6;max-height:280px;overflow-y:auto;}
-.copy-btn{margin-top:12px;padding:8px 20px;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:var(--green);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;}
-.copy-btn:hover{background:rgba(34,197,94,0.25);}
-
-.btn-back{padding:10px 24px;background:rgba(255,255,255,0.07);border:1px solid var(--border);border-radius:8px;color:var(--white);font-size:13.5px;font-weight:500;cursor:pointer;text-decoration:none;font-family:'IBM Plex Sans',sans-serif;display:inline-block;}
-.btn-back:hover{background:rgba(255,255,255,0.12);}
-
-@media(max-width:500px){.kpi-grid{grid-template-columns:repeat(2,1fr);}.download-grid{grid-template-columns:1fr 1fr;}}
+/* WhatsApp modal */
+.wa-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;align-items:center;justify-content:center;}
+.wa-overlay.show{display:flex;}
+.wa-box{background:var(--navy-mid);border:1px solid var(--border);border-radius:14px;padding:24px;max-width:600px;width:90%;max-height:80vh;display:flex;flex-direction:column;gap:12px;}
+.wa-title{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:var(--green);}
+.wa-text{font-size:12px;color:var(--white);white-space:pre-wrap;line-height:1.6;overflow-y:auto;flex:1;background:rgba(0,0,0,0.2);border-radius:8px;padding:12px;}
+.wa-actions{display:flex;gap:10px;}
+.btn-copy{padding:9px 20px;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:var(--green);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;}
+.btn-close{padding:9px 20px;background:rgba(255,255,255,0.07);border:1px solid var(--border);color:var(--white);border-radius:8px;font-size:13px;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;}
+.btn-back{padding:9px 20px;background:rgba(255,255,255,0.07);border:1px solid var(--border);border-radius:8px;color:var(--white);font-size:13px;cursor:pointer;text-decoration:none;font-family:'IBM Plex Sans',sans-serif;display:inline-block;margin-bottom:20px;}
+@media(max-width:500px){.kpi-grid{grid-template-columns:1fr 1fr;}.dl-grid{grid-template-columns:1fr 1fr;}}
 </style>
 </head>
 <body>
 <div class="container">
+  <a href="/" class="btn-back">← New Inspection</a>
 
-  <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
-    <a href="/" class="btn-back">← New Inspection</a>
+  <div class="page-title">✅ Inspection Complete</div>
+  <div class="page-sub">
+    Inspection of <b>{{ header.get('location','') }}</b> on <b>{{ header.get('date','') }}</b> by <b>{{ header.get('name','') }}</b> ({{ header.get('designation','') }})
   </div>
 
-  <div class="page-title">✅ Inspection Report Generated</div>
-  <div class="page-sub">{{ header.get('location','') }} &nbsp;·&nbsp; {{ header.get('date','') }} &nbsp;·&nbsp; {{ header.get('name','') }}</div>
-
-  <!-- KPI CARDS -->
+  <!-- KPI -->
   <div class="kpi-grid">
-    <div class="kpi-card">
-      <div class="kpi-label">Total Items</div>
-      <div class="kpi-val">{{ total_ans }}</div>
+    <div class="kpi-card"><div class="kpi-label">Inspected</div><div class="kpi-val">{{ total_ans }}</div></div>
+    <div class="kpi-card"><div class="kpi-label">Satisfactory</div><div class="kpi-val green">{{ total_yes }}</div></div>
+    <div class="kpi-card"><div class="kpi-label">Deficiencies</div><div class="kpi-val red">{{ total_no }}</div></div>
+    <div class="kpi-card"><div class="kpi-label">Compliance</div><div class="kpi-val amber">{{ pct }}%</div></div>
+  </div>
+
+  <!-- Download form with Other Remarks + Copy To -->
+  <div class="section-title">Finalise & Download Report</div>
+  <div class="download-form">
+
+    <div class="field">
+      <label>Other Remarks / Observations during Inspection</label>
+      <textarea id="other_remarks" rows="4" placeholder="Enter any additional observations, general remarks, or instructions noted during the inspection..."></textarea>
     </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Compliant</div>
-      <div class="kpi-val green">{{ total_yes }}</div>
+
+    <div class="field">
+      <label>Copy To (Additional)</label>
+      <input type="text" id="extra_copy_to" placeholder="e.g. SSE/C&W/BCT, JE/Mahalaxmi (comma separated)">
+      {% if auto_copy %}
+      <div class="copy-hint">
+        Auto-detected from Action By fields:
+        {% for n in auto_copy %}<b>{{ n }}</b>{% if not loop.last %}, {% endif %}{% endfor %}
+        — will be included automatically with "For information and necessary action."
+      </div>
+      {% endif %}
     </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Non-Compliant</div>
-      <div class="kpi-val red">{{ total_no }}</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Compliance %</div>
-      <div class="kpi-val saffron">{{ pct }}%</div>
+
+    <div class="dl-grid">
+      <button class="dl-btn dl-pdf" onclick="downloadReport('pdf')">📄 Download PDF</button>
+      <button class="dl-btn dl-docx" onclick="downloadReport('docx')">📝 Download Word</button>
+      <button class="dl-btn dl-wa" onclick="showWhatsApp()">💬 WhatsApp Summary</button>
     </div>
   </div>
 
-  <!-- DOWNLOADS -->
-  <div class="section-title">Download Report</div>
-  <div class="download-grid">
-    <a href="/download/pdf" class="dl-btn pdf">
-      <div class="dl-icon">📄</div>
-      <div class="dl-label">Download PDF</div>
-      <div class="dl-sub">Formatted report</div>
-    </a>
-    <a href="/download/docx" class="dl-btn docx">
-      <div class="dl-icon">📝</div>
-      <div class="dl-label">Download Word</div>
-      <div class="dl-sub">.docx format</div>
-    </a>
-    <div class="dl-btn wa" onclick="copyWhatsApp()">
-      <div class="dl-icon">💬</div>
-      <div class="dl-label">Copy for WhatsApp</div>
-      <div class="dl-sub">Tap to copy</div>
-    </div>
-  </div>
-
-  <!-- NON-COMPLIANT ITEMS -->
-  <div class="section-title">Non-Compliant Items ({{ nc_items|length }})</div>
+  <!-- Deficiencies -->
+  <div class="section-title">Deficiencies ({{ nc_items|length }})</div>
   {% if nc_items %}
   <div class="nc-list">
     {% for item in nc_items %}
     <div class="nc-item">
-      <div class="nc-item-label">{{ item.label }}</div>
-      <div class="nc-item-meta">{{ item.section }}</div>
-      {% if item.remark %}
-      <div class="nc-item-remark">Remark: {{ item.remark }}</div>
-      {% endif %}
-      {% if item.persons %}
-      <div style="font-size:12px;color:#22c55e;margin-top:4px;font-weight:600;">&#128100; Responsible: {{ item.persons }}</div>
-      {% endif %}
+      <div class="nc-label">{{ item.label }}</div>
+      <div class="nc-meta">{{ item.section }}</div>
+      {% if item.remark %}<div class="nc-remark">Remark: {{ item.remark }}</div>{% endif %}
+      {% if item.action_by %}<div class="nc-action">&#128100; Action By: {{ item.action_by }}</div>{% endif %}
     </div>
     {% endfor %}
   </div>
   {% else %}
-  <div class="no-nc">🎉 All items compliant — Excellent inspection result!</div>
+  <div class="no-nc">🎉 No deficiencies — Full Compliance!</div>
   {% endif %}
-
-  <!-- WHATSAPP PREVIEW -->
-  <div class="section-title">WhatsApp Summary Preview</div>
-  <div class="wa-box">
-    <div class="wa-text" id="waText">{{ whatsapp }}</div>
-    <button class="copy-btn" onclick="copyWhatsApp()">📋 Copy to Clipboard</button>
-  </div>
 
 </div>
 
+<!-- WhatsApp modal -->
+<div class="wa-overlay" id="waOverlay">
+  <div class="wa-box">
+    <div class="wa-title">💬 WhatsApp Summary</div>
+    <div class="wa-text" id="waText">Generating...</div>
+    <div class="wa-actions">
+      <button class="btn-copy" onclick="copyWA()">📋 Copy</button>
+      <button class="btn-close" onclick="document.getElementById('waOverlay').classList.remove('show')">Close</button>
+    </div>
+  </div>
+</div>
+
 <script>
-function copyWhatsApp() {
-  const text = document.getElementById('waText').innerText;
-  navigator.clipboard.writeText(text).then(() => {
-    alert('Copied! Paste in WhatsApp.');
-  }).catch(() => {
-    // Fallback
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    alert('Copied!');
+function getFormData(){
+  return new FormData()
+  // built inline in downloadReport
+}
+
+function downloadReport(type){
+  var form = document.createElement('form');
+  form.method = 'POST';
+  form.action = '/download/' + type;
+  var f1 = document.createElement('input');
+  f1.type='hidden'; f1.name='other_remarks';
+  f1.value = document.getElementById('other_remarks').value;
+  var f2 = document.createElement('input');
+  f2.type='hidden'; f2.name='extra_copy_to';
+  f2.value = document.getElementById('extra_copy_to').value;
+  form.appendChild(f1); form.appendChild(f2);
+  document.body.appendChild(form);
+  form.submit();
+  document.body.removeChild(form);
+}
+
+function showWhatsApp(){
+  document.getElementById('waOverlay').classList.add('show');
+  // Build preview from page data
+  var loc   = '{{ header.get("location","") }}';
+  var date  = '{{ header.get("date","") }}';
+  var name  = '{{ header.get("name","") }}';
+  var desig = '{{ header.get("designation","") }}';
+  var remarks = document.getElementById('other_remarks').value;
+  var extra   = document.getElementById('extra_copy_to').value;
+  var lines = [
+    '*Inspection of ' + loc + ' on ' + date + ' by ' + name + ' (' + desig + ')*',
+    '',
+    '*COMPLIANCE SUMMARY*',
+    'Items Inspected: {{ total_ans }}  |  Satisfactory: {{ total_yes }}  |  Deficiencies: {{ total_no }}  |  Compliance: {{ pct }}%',
+    '',
+    '*DEFICIENCIES NOTED:*',
+  ];
+  {% if nc_items %}
+  {% for item in nc_items %}
+  lines.push('• {{ item.label|replace("'","\\'")|truncate(80,true,"...") }}{% if item.remark %}\n  Remark: {{ item.remark|replace("'","\\'") }}{% endif %}{% if item.action_by %}\n  Action By: {{ item.action_by|replace("'","\\'") }}{% endif %}');
+  {% endfor %}
+  {% else %}
+  lines.push('Nil — Full Compliance');
+  {% endif %}
+  if(remarks.trim()){lines.push('');lines.push('*OTHER REMARKS / OBSERVATIONS:*');lines.push(remarks.trim());}
+  var autoCopy = [{% for n in auto_copy %}'{{ n }}'{% if not loop.last %},{% endif %}{% endfor %}];
+  var extraArr = extra ? extra.split(',').map(function(s){return s.trim();}).filter(Boolean) : [];
+  var allCopy  = autoCopy.concat(extraArr.filter(function(n){return autoCopy.indexOf(n)===-1;}));
+  if(allCopy.length){lines.push('');lines.push('*COPY TO:*');allCopy.forEach(function(n){lines.push('• '+n+' — For information and necessary action.');});}
+  document.getElementById('waText').textContent = lines.join('\n');
+}
+
+function copyWA(){
+  var text = document.getElementById('waText').textContent;
+  navigator.clipboard.writeText(text).then(function(){alert('Copied!');}).catch(function(){
+    var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);alert('Copied!');
   });
 }
 </script>
