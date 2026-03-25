@@ -1,10 +1,29 @@
-from flask import Flask, render_template, request, session, send_file, jsonify
-import os, io, json
+from flask import Flask, render_template, request, session, send_file, jsonify, redirect
+import os, io, json, shutil
 from datetime import datetime
-from checklist_data import SECTIONS
+
+# ── Dynamic checklist loader ──────────────────────────────────────────────────
+BASE_DIR      = os.path.dirname(os.path.abspath(__file__))
+CHECKLIST_JSON = os.path.join(BASE_DIR, 'checklist.json')
+DEFAULT_JSON   = os.path.join(BASE_DIR, 'checklist_default.json')
+
+def load_sections():
+    try:
+        with open(CHECKLIST_JSON) as f:
+            return json.load(f)
+    except Exception:
+        from checklist_data import SECTIONS as S
+        return S
+
+def save_sections(data):
+    with open(CHECKLIST_JSON, 'w') as f:
+        json.dump(data, f, indent=2)
+
+SECTIONS = load_sections()
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "mech-bcr-inspection-2026")
+app.secret_key   = os.environ.get("SECRET_KEY",  "mech-bcr-inspection-2026")
+ADMIN_PASSWORD   = os.environ.get("ADMIN_PASSWORD", "bctrailway2026")
 
 # ── helpers ───────────────────────────────────────────────────────────────────
 def answered_items(responses):
@@ -415,7 +434,60 @@ def generate_whatsapp(header, responses, other_remarks='', extra_copy_to='', bw=
     return "\n".join(lines)
 
 
-# ── Routes ────────────────────────────────────────────────────────────────────
+# ── Admin routes ──────────────────────────────────────────────────────────────
+@app.route('/admin/login', methods=['GET','POST'])
+def admin_login():
+    if request.method == 'POST':
+        if request.form.get('password') == ADMIN_PASSWORD:
+            session['admin'] = True
+            return redirect('/admin')
+        return render_template('admin_login.html', error='Incorrect password')
+    return render_template('admin_login.html', error=None)
+
+@app.route('/admin')
+def admin():
+    if not session.get('admin'):
+        return redirect('/admin/login')
+    return render_template('admin.html')
+
+@app.route('/admin/data')
+def admin_data():
+    if not session.get('admin'):
+        return jsonify({'error':'unauthorized'}), 403
+    return jsonify(load_sections())
+
+@app.route('/admin/save', methods=['POST'])
+def admin_save():
+    if not session.get('admin'):
+        return jsonify({'status':'error','message':'unauthorized'}), 403
+    try:
+        data = request.get_json()
+        save_sections(data)
+        global SECTIONS
+        SECTIONS = data
+        return jsonify({'status':'ok'})
+    except Exception as e:
+        return jsonify({'status':'error','message':str(e)})
+
+@app.route('/admin/reset', methods=['POST'])
+def admin_reset():
+    if not session.get('admin'):
+        return jsonify({'status':'error'}), 403
+    try:
+        from checklist_data import SECTIONS as S
+        save_sections(S)
+        global SECTIONS
+        SECTIONS = S
+        return jsonify({'status':'ok'})
+    except Exception as e:
+        return jsonify({'status':'error','message':str(e)})
+
+@app.route('/admin/logout')
+def admin_logout():
+    session.pop('admin', None)
+    return redirect('/')
+
+# ── Main routes ────────────────────────────────────────────────────────────────
 @app.route('/')
 def index():
     return render_template('index.html')
