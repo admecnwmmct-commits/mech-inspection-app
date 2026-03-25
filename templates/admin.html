@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel · Checklist Editor</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0a1628;--navy-mid:#112040;--saffron:#f4a014;--steel:#3a7bd5;--white:#f8f9fc;--muted:#94a3b8;--border:rgba(255,255,255,0.08);--card:rgba(255,255,255,0.04);--green:#22c55e;--red:#ef4444;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--navy);color:var(--white);min-height:100vh;}
+.topbar{background:var(--navy-mid);border-bottom:2px solid rgba(244,160,20,0.4);padding:0 20px;display:flex;align-items:center;gap:16px;height:56px;}
+.topbar-brand{font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700;}
+.topbar-sub{font-size:12px;color:var(--saffron);}
+.topbar-right{margin-left:auto;display:flex;gap:10px;align-items:center;}
+.btn-sm{padding:6px 16px;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;border:none;transition:all .15s;}
+.btn-green{background:rgba(34,197,94,0.15);color:var(--green);border:1px solid rgba(34,197,94,0.3);}
+.btn-green:hover{background:rgba(34,197,94,0.25);}
+.btn-red{background:rgba(239,68,68,0.12);color:var(--red);border:1px solid rgba(239,68,68,0.25);}
+.btn-red:hover{background:rgba(239,68,68,0.22);}
+.btn-blue{background:rgba(58,123,213,0.15);color:#5a9bf5;border:1px solid rgba(58,123,213,0.3);}
+.btn-blue:hover{background:rgba(58,123,213,0.25);}
+.btn-amber{background:rgba(244,160,20,0.15);color:var(--saffron);border:1px solid rgba(244,160,20,0.3);}
+.btn-amber:hover{background:rgba(244,160,20,0.25);}
+.main{max-width:1000px;margin:0 auto;padding:24px 20px 60px;}
+
+/* Section cards */
+.section-card{background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:16px;overflow:hidden;}
+.section-header{padding:14px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;border-bottom:1px solid var(--border);}
+.section-header:hover{background:rgba(255,255,255,0.03);}
+.section-icon-input{width:48px;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:var(--white);font-size:18px;text-align:center;outline:none;}
+.section-title-input{flex:1;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:6px;padding:7px 12px;color:var(--white);font-size:14px;font-weight:600;outline:none;font-family:'IBM Plex Sans',sans-serif;}
+.section-title-input:focus,.section-icon-input:focus{border-color:rgba(244,160,20,0.4);}
+.section-body{padding:12px 18px 16px;}
+.chevron{font-size:12px;color:var(--muted);transition:transform .2s;margin-left:4px;}
+.chevron.open{transform:rotate(90deg);}
+.collapsed{display:none;}
+
+/* Subsection */
+.subsection-block{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:10px;margin-bottom:10px;padding:12px 14px;}
+.sub-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.sub-title-input{flex:1;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:6px;padding:6px 12px;color:var(--white);font-size:13px;font-weight:500;outline:none;font-family:'IBM Plex Sans',sans-serif;}
+.sub-title-input:focus{border-color:rgba(244,160,20,0.4);}
+
+/* Items */
+.item-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;}
+.item-input{flex:1;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--white);font-size:12.5px;outline:none;font-family:'IBM Plex Sans',sans-serif;resize:none;line-height:1.4;}
+.item-input:focus{border-color:rgba(244,160,20,0.3);}
+.btn-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;font-size:14px;flex-shrink:0;transition:all .15s;}
+.del-btn{background:rgba(239,68,68,0.12);color:var(--red);}
+.del-btn:hover{background:rgba(239,68,68,0.25);}
+.add-item-btn{display:flex;align-items:center;gap:6px;padding:5px 12px;font-size:12px;margin-top:4px;}
+
+/* Save bar */
+.save-bar{position:fixed;bottom:0;left:0;right:0;background:var(--navy-mid);border-top:1px solid var(--border);padding:12px 20px;display:flex;justify-content:space-between;align-items:center;z-index:100;}
+.save-status{font-size:13px;color:var(--muted);}
+.save-status.saved{color:var(--green);}
+.save-status.unsaved{color:var(--saffron);}
+.btn-save{padding:10px 32px;background:var(--saffron);color:var(--navy);border-radius:8px;font-size:13.5px;font-weight:700;cursor:pointer;border:none;font-family:'IBM Plex Sans',sans-serif;}
+.btn-save:hover{background:#fbbf45;}
+
+/* Add section */
+.add-section-btn{display:flex;align-items:center;gap:8px;padding:12px 20px;background:rgba(244,160,20,0.06);border:1px dashed rgba(244,160,20,0.3);border-radius:12px;color:var(--saffron);font-size:13px;font-weight:600;cursor:pointer;width:100%;margin-bottom:60px;justify-content:center;}
+.add-section-btn:hover{background:rgba(244,160,20,0.12);}
+
+.drag-handle{color:var(--muted);cursor:grab;font-size:14px;padding:4px;}
+.count-badge{font-size:11px;color:var(--muted);background:rgba(255,255,255,0.08);padding:2px 8px;border-radius:10px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-brand">⚙️ Admin Panel</div>
+  <div class="topbar-sub">Checklist Editor · BCT Mech Dept</div>
+  <div class="topbar-right">
+    <a href="/" style="color:var(--muted);font-size:12px;text-decoration:none;">← Back to App</a>
+  </div>
+</div>
+
+<div class="main">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+    <div>
+      <div style="font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;">Inspection Checklist Editor</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:3px;">Add, edit or delete sections, subsections and checklist items. Click Save to apply changes.</div>
+    </div>
+  </div>
+
+  <div id="sectionsContainer"></div>
+
+  <button class="add-section-btn" onclick="addSection()">+ Add New Inspection Section</button>
+</div>
+
+<div class="save-bar">
+  <div class="save-status" id="saveStatus">Loading...</div>
+  <div style="display:flex;gap:10px;">
+    <button class="btn-sm btn-red" onclick="if(confirm('Reset to original factory checklist? All your edits will be lost.')) resetToDefault()">↺ Reset to Default</button>
+    <button class="btn-save" onclick="saveAll()">💾 Save Changes</button>
+  </div>
+</div>
+
+<script>
+var data = [];
+var dirty = false;
+
+// Load from server
+fetch('/admin/data')
+  .then(function(r){return r.json();})
+  .then(function(d){data=d;renderAll();setStatus('All changes saved','saved');})
+  .catch(function(){setStatus('Error loading data','unsaved');});
+
+function setStatus(msg, cls){
+  var el = document.getElementById('saveStatus');
+  el.textContent = msg;
+  el.className = 'save-status ' + (cls||'');
+}
+
+function markDirty(){
+  dirty = true;
+  setStatus('Unsaved changes — click Save','unsaved');
+}
+
+function renderAll(){
+  var c = document.getElementById('sectionsContainer');
+  c.innerHTML = '';
+  data.forEach(function(sec, si){
+    c.appendChild(makeSectionCard(sec, si));
+  });
+}
+
+function makeSectionCard(sec, si){
+  var card = document.createElement('div');
+  card.className = 'section-card';
+  card.id = 'sec_'+si;
+
+  // Header
+  var hdr = document.createElement('div');
+  hdr.className = 'section-header';
+
+  var iconInp = document.createElement('input');
+  iconInp.className = 'section-icon-input';
+  iconInp.value = sec.icon || '📋';
+  iconInp.title = 'Icon (emoji)';
+  iconInp.oninput = function(){data[si].icon=this.value;markDirty();};
+
+  var titleInp = document.createElement('input');
+  titleInp.className = 'section-title-input';
+  titleInp.value = sec.title || '';
+  titleInp.placeholder = 'Section title...';
+  titleInp.oninput = function(){data[si].title=this.value;markDirty();};
+
+  var totalItems = 0;
+  (sec.subsections||[]).forEach(function(s){totalItems+=(s.items||[]).length;});
+  var badge = document.createElement('span');
+  badge.className = 'count-badge';
+  badge.textContent = totalItems + ' items';
+  badge.id = 'badge_'+si;
+
+  var chevron = document.createElement('span');
+  chevron.className = 'chevron open';
+  chevron.textContent = '▶';
+  chevron.id = 'chev_'+si;
+
+  var delBtn = document.createElement('button');
+  delBtn.className = 'btn-sm btn-red';
+  delBtn.textContent = '✕ Delete Section';
+  delBtn.onclick = function(e){e.stopPropagation();if(confirm('Delete this entire section and all its items?')){data.splice(si,1);renderAll();markDirty();}};
+
+  hdr.appendChild(iconInp);
+  hdr.appendChild(titleInp);
+  hdr.appendChild(badge);
+  hdr.appendChild(delBtn);
+  hdr.appendChild(chevron);
+  hdr.onclick = function(e){
+    if(e.target===iconInp||e.target===titleInp||e.target===delBtn) return;
+    var body = document.getElementById('secbody_'+si);
+    var open = body.style.display !== 'none';
+    body.style.display = open ? 'none' : 'block';
+    chevron.className = 'chevron ' + (open ? '' : 'open');
+  };
+
+  // Body
+  var body = document.createElement('div');
+  body.className = 'section-body';
+  body.id = 'secbody_'+si;
+
+  (sec.subsections||[]).forEach(function(sub, bi){
+    body.appendChild(makeSubBlock(sub, si, bi));
+  });
+
+  // Add subsection button
+  var addSubBtn = document.createElement('button');
+  addSubBtn.className = 'btn-sm btn-blue';
+  addSubBtn.style.marginTop = '8px';
+  addSubBtn.textContent = '+ Add Subsection';
+  addSubBtn.onclick = function(){
+    if(!data[si].subsections) data[si].subsections=[];
+    data[si].subsections.push({id:'sub_'+Date.now(),title:'New Subsection',items:[]});
+    renderAll(); markDirty();
+  };
+  body.appendChild(addSubBtn);
+
+  card.appendChild(hdr);
+  card.appendChild(body);
+  return card;
+}
+
+function makeSubBlock(sub, si, bi){
+  var block = document.createElement('div');
+  block.className = 'subsection-block';
+
+  // Sub header
+  var subHdr = document.createElement('div');
+  subHdr.className = 'sub-header';
+
+  var subTitleInp = document.createElement('input');
+  subTitleInp.className = 'sub-title-input';
+  subTitleInp.value = sub.title || '';
+  subTitleInp.placeholder = 'Subsection title...';
+  subTitleInp.oninput = function(){data[si].subsections[bi].title=this.value;markDirty();};
+
+  var delSubBtn = document.createElement('button');
+  delSubBtn.className = 'btn-sm btn-red';
+  delSubBtn.textContent = '✕ Delete';
+  delSubBtn.onclick = function(){
+    if(confirm('Delete this subsection and all its items?')){
+      data[si].subsections.splice(bi,1);renderAll();markDirty();
+    }
+  };
+
+  subHdr.appendChild(subTitleInp);
+  subHdr.appendChild(delSubBtn);
+  block.appendChild(subHdr);
+
+  // Items
+  var itemsDiv = document.createElement('div');
+  itemsDiv.id = 'items_'+si+'_'+bi;
+  (sub.items||[]).forEach(function(item, ii){
+    itemsDiv.appendChild(makeItemRow(item, si, bi, ii));
+  });
+  block.appendChild(itemsDiv);
+
+  // Add item button
+  var addItemBtn = document.createElement('button');
+  addItemBtn.className = 'btn-sm btn-green add-item-btn';
+  addItemBtn.textContent = '+ Add Item';
+  addItemBtn.onclick = function(){
+    if(!data[si].subsections[bi].items) data[si].subsections[bi].items=[];
+    var newId = 'item_'+Date.now();
+    data[si].subsections[bi].items.push({id:newId, label:''});
+    renderAll(); markDirty();
+    // Focus new item
+    setTimeout(function(){
+      var inputs = document.querySelectorAll('#items_'+si+'_'+bi+' .item-input');
+      if(inputs.length) inputs[inputs.length-1].focus();
+    },50);
+  };
+  block.appendChild(addItemBtn);
+
+  return block;
+}
+
+function makeItemRow(item, si, bi, ii){
+  var row = document.createElement('div');
+  row.className = 'item-row';
+
+  var inp = document.createElement('textarea');
+  inp.className = 'item-input';
+  inp.value = item.label || '';
+  inp.rows = 2;
+  inp.placeholder = 'Enter inspection item / question...';
+  inp.oninput = function(){
+    data[si].subsections[bi].items[ii].label = this.value;
+    markDirty();
+    this.style.height = 'auto';
+    this.style.height = this.scrollHeight + 'px';
+  };
+  // Auto resize
+  setTimeout(function(){
+    inp.style.height = 'auto';
+    inp.style.height = inp.scrollHeight + 'px';
+  }, 10);
+
+  var delBtn = document.createElement('button');
+  delBtn.className = 'btn-icon del-btn';
+  delBtn.textContent = '✕';
+  delBtn.title = 'Delete item';
+  delBtn.onclick = function(){
+    data[si].subsections[bi].items.splice(ii,1);
+    renderAll(); markDirty();
+  };
+
+  row.appendChild(inp);
+  row.appendChild(delBtn);
+  return row;
+}
+
+function addSection(){
+  data.push({
+    id: 'sec_'+Date.now(),
+    title: 'New Inspection Section',
+    icon: '📋',
+    subsections: [{
+      id: 'sub_'+Date.now(),
+      title: 'Subsection 1',
+      items: [{id:'item_'+Date.now(), label:''}]
+    }]
+  });
+  renderAll(); markDirty();
+  window.scrollTo({top:document.body.scrollHeight, behavior:'smooth'});
+}
+
+function saveAll(){
+  setStatus('Saving...','');
+  fetch('/admin/save', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(data)
+  })
+  .then(function(r){return r.json();})
+  .then(function(res){
+    if(res.status==='ok'){
+      dirty=false;
+      setStatus('✓ Saved successfully — changes live immediately','saved');
+    } else {
+      setStatus('Error saving: '+res.message,'unsaved');
+    }
+  })
+  .catch(function(){setStatus('Network error — try again','unsaved');});
+}
+
+function resetToDefault(){
+  fetch('/admin/reset', {method:'POST'})
+  .then(function(r){return r.json();})
+  .then(function(res){
+    if(res.status==='ok'){
+      fetch('/admin/data').then(function(r){return r.json();}).then(function(d){
+        data=d; renderAll(); setStatus('Reset to default checklist','saved');
+      });
+    }
+  });
+}
+
+window.addEventListener('beforeunload', function(e){
+  if(dirty){ e.preventDefault(); e.returnValue=''; }
+});
+</script>
+</body>
+</html>
