@@ -1,0 +1,1012 @@
+[
+  {
+    "id": "coaching_registers",
+    "title": "Coaching Depot \u2014 Registers",
+    "icon": "\ud83d\udccb",
+    "subsections": [
+      {
+        "id": "pdo_registers",
+        "title": "A. Registers in Platform Duty Office",
+        "items": [
+          {
+            "id": "pdo_1_i",
+            "label": "Daily Diary (Supervisor): Shift wise details of important instructions written in diary?"
+          },
+          {
+            "id": "pdo_1_ii",
+            "label": "Daily Diary (Supervisor): List of T&P given in charge of duty JE/SE with actually present?"
+          },
+          {
+            "id": "pdo_1_iii",
+            "label": "Daily Diary (Supervisor): Defective M&P properly entered in the record?"
+          },
+          {
+            "id": "pdo_1_iv",
+            "label": "Daily Diary (Supervisor): Work allotted to staff written properly in the diary?"
+          },
+          {
+            "id": "pdo_1_v",
+            "label": "Daily Diary (Supervisor): Diary has been super checked by the incharge?"
+          },
+          {
+            "id": "pdo_1_vi",
+            "label": "Daily Diary (Supervisor): Record of padlocking of empty coaching rakes available?"
+          },
+          {
+            "id": "pdo_2_i",
+            "label": "Detention Register: Details of the detentions mentioned?"
+          },
+          {
+            "id": "pdo_2_ii",
+            "label": "Detention Register: Proper action taken thereof?"
+          },
+          {
+            "id": "pdo_3_i",
+            "label": "Special Trains Register: Details of all VPUs attached in trains available?"
+          },
+          {
+            "id": "pdo_3_ii",
+            "label": "Special Trains Register: Information of extra coaches given to linen department?"
+          },
+          {
+            "id": "pdo_3_iii",
+            "label": "Special Trains Register: Information of Special trains given to linen department?"
+          },
+          {
+            "id": "pdo_4_i",
+            "label": "Primary & Terminal Maintenance Record: Details of all trains as per examination prescribed available?"
+          },
+          {
+            "id": "pdo_4_ii",
+            "label": "Primary & Terminal Maintenance Record: Details of terminal examination trains on platform available?"
+          },
+          {
+            "id": "pdo_4_iii",
+            "label": "Primary & Terminal Maintenance Record: Abnormalities in terminal examination communicated to primary depots?"
+          },
+          {
+            "id": "pdo_5_i",
+            "label": "Officer/Night Inspection Register: Register is made as per standard Proforma?"
+          },
+          {
+            "id": "pdo_5_ii",
+            "label": "Officer/Night Inspection Register: All JE/SSE working in shift noted instructions given by inspecting officer?"
+          },
+          {
+            "id": "pdo_5_iii",
+            "label": "Officer/Night Inspection Register: Compliance being taken?"
+          },
+          {
+            "id": "pdo_5_iv",
+            "label": "Officer/Night Inspection Register: Instructions being followed during work?"
+          }
+        ]
+      },
+      {
+        "id": "wl_registers",
+        "title": "B. Registers in Washing Line",
+        "items": [
+          {
+            "id": "wl_1_i",
+            "label": "Daily Diary (JE/SSE): Shift wise details of important instructions written in diary?"
+          },
+          {
+            "id": "wl_1_ii",
+            "label": "Daily Diary (JE/SSE): List of T&P given in charge of duty JE/SE with actually present?"
+          },
+          {
+            "id": "wl_1_iii",
+            "label": "Daily Diary (JE/SSE): Defective M&P properly entered in the record?"
+          },
+          {
+            "id": "wl_1_iv",
+            "label": "Daily Diary (JE/SSE): Work allotted to staff written properly in the diary?"
+          },
+          {
+            "id": "wl_1_v",
+            "label": "Daily Diary (JE/SSE): Diary has been super checked by the incharge?"
+          },
+          {
+            "id": "wl_1_vi",
+            "label": "Daily Diary (JE/SSE): Record of each coaching rake available?"
+          },
+          {
+            "id": "wl_2_i",
+            "label": "Air Pressure Testing Register: Register is made as per standard Proforma?"
+          },
+          {
+            "id": "wl_2_ii",
+            "label": "Air Pressure Testing Register: Pressure is tested by loco or compressor and RTR?"
+          },
+          {
+            "id": "wl_2_iii",
+            "label": "Air Pressure Testing Register: Any train skipped for pressure testing?"
+          },
+          {
+            "id": "wl_2_iv",
+            "label": "Air Pressure Testing Register: Details of defect to improve brake power mentioned in record?"
+          },
+          {
+            "id": "wl_2_v",
+            "label": "Air Pressure Testing Register: Record of piston stroke and releasing time within prescribed limit?"
+          },
+          {
+            "id": "wl_3_i",
+            "label": "DVS Register: Register is made as per standard Proforma?"
+          },
+          {
+            "id": "wl_3_ii",
+            "label": "DVS Register: Details of all defects in the coach are mentioned?"
+          },
+          {
+            "id": "wl_3_iii",
+            "label": "DVS Register: Numbers of damage vehicles are within ineffective limits?"
+          },
+          {
+            "id": "wl_3_iv",
+            "label": "DVS Register: Repetitions of defects are highlighted to higher authority?"
+          },
+          {
+            "id": "wl_4_i",
+            "label": "Special Drive Register: Details of special drives launched from time to time mentioned?"
+          },
+          {
+            "id": "wl_4_ii",
+            "label": "Special Drive Register: Details of any abnormality noticed and action taken mentioned?"
+          },
+          {
+            "id": "wl_5_i",
+            "label": "Maintenance Schedule Register: Details of schedule maintenance undertaken updated in register?"
+          }
+        ]
+      },
+      {
+        "id": "sl_registers",
+        "title": "C. Registers in Sick Line",
+        "items": [
+          {
+            "id": "sl_1_i",
+            "label": "Daily Diary (JE/SSE): Details of important instructions written in diary?"
+          },
+          {
+            "id": "sl_1_ii",
+            "label": "Daily Diary (JE/SSE): List of T&P available shown in the diary?"
+          },
+          {
+            "id": "sl_1_iii",
+            "label": "Daily Diary (JE/SSE): Defective M&P properly entered in the record?"
+          },
+          {
+            "id": "sl_1_iv",
+            "label": "Daily Diary (JE/SSE): Work allotted to staff written properly in the diary?"
+          },
+          {
+            "id": "sl_2_i",
+            "label": "Daily Damage Register: Register is made as per standard Proforma?"
+          },
+          {
+            "id": "sl_2_ii",
+            "label": "Daily Damage Register: Details of all defects attended mentioned?"
+          },
+          {
+            "id": "sl_2_iii",
+            "label": "Daily Damage Register: Numbers of damage coaches are within ineffective limit?"
+          },
+          {
+            "id": "sl_2_iv",
+            "label": "Daily Damage Register: Any check on damage by Coaching Depot Officer (CDO)?"
+          },
+          {
+            "id": "sl_3_i",
+            "label": "Record of IOH/SS1: Register is made as per standard Proforma?"
+          },
+          {
+            "id": "sl_3_ii",
+            "label": "Record of IOH/SS1: Details of all defects mentioned being attended in IOH?"
+          },
+          {
+            "id": "sl_3_iii",
+            "label": "Record of IOH/SS1: Repetition of defects are highlighted to higher authorities?"
+          },
+          {
+            "id": "sl_4_i",
+            "label": "Air Pressure Testing (SCTR): Register is made as per standard Proforma?"
+          },
+          {
+            "id": "sl_4_ii",
+            "label": "Air Pressure Testing (SCTR): Pressure is tested by Single Car Test Rig (SCTR)?"
+          },
+          {
+            "id": "sl_4_iii",
+            "label": "Air Pressure Testing (SCTR): Any coach skipped for pressure testing?"
+          },
+          {
+            "id": "sl_5_i",
+            "label": "Office Order Register: Register is maintained and readily available?"
+          },
+          {
+            "id": "sl_5_ii",
+            "label": "Office Order Register: All JE/SSE working in shift noted the instruction?"
+          },
+          {
+            "id": "sl_5_iii",
+            "label": "Office Order Register: Any action taken on the defaulters?"
+          },
+          {
+            "id": "sl_5_iv",
+            "label": "Office Order Register: Instructions are being followed during work?"
+          },
+          {
+            "id": "sl_6_i",
+            "label": "Wheel Register: Details of incoming/outgoing wheels from/to workshop available?"
+          },
+          {
+            "id": "sl_6_ii",
+            "label": "Wheel Register: Diameter of wheel sets available in sick line mentioned?"
+          },
+          {
+            "id": "sl_7_i",
+            "label": "Warranty Register: Details of under warranty components changed during sick-line attention recorded?"
+          },
+          {
+            "id": "sl_7_ii",
+            "label": "Warranty Register: Action taken on under warranty components mentioned in register?"
+          },
+          {
+            "id": "sl_8_i",
+            "label": "Assurance Register: Assurance of having read all rules & guidelines has been recorded?"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "coaching_inspection",
+    "title": "Coaching Depot \u2014 Physical Inspection",
+    "icon": "\ud83d\udd0d",
+    "subsections": [
+      {
+        "id": "pit_examination",
+        "title": "A. Pit Examination & Cleanliness",
+        "items": [
+          {
+            "id": "pit_a",
+            "label": "Catwalk, apron, pit in good condition?"
+          },
+          {
+            "id": "pit_b",
+            "label": "Clear water drainage system available on washing line pit?"
+          },
+          {
+            "id": "pit_c",
+            "label": "Tie bar, wooden packing available on washing for avoiding spreading of rail line?"
+          },
+          {
+            "id": "pit_d",
+            "label": "Pit light and column light available on washing line for under gear & bogie side examination?"
+          },
+          {
+            "id": "pit_e",
+            "label": "Proper earthing arrangement available during welding work in coaches?"
+          },
+          {
+            "id": "pit_f",
+            "label": "Facilities to change the belts on the rakes itself checked?"
+          },
+          {
+            "id": "pit_g",
+            "label": "Drive system for generation testing and regulator setting for alternators at primary depots checked?"
+          },
+          {
+            "id": "pit_h",
+            "label": "Rake Testing Rig (RTR) & Single Car Testing Rig (SCTR) available in required quantity & in proper working order?"
+          },
+          {
+            "id": "pit_i",
+            "label": "Rake is in locked condition during placement from platform to washing line vice versa?"
+          },
+          {
+            "id": "pit_j",
+            "label": "Arrangements of cleaning of pit lines, adjoining areas and effectiveness thereof checked?"
+          },
+          {
+            "id": "pit_k",
+            "label": "Pest controlling of the pit lines and adjoining areas done?"
+          },
+          {
+            "id": "pit_l",
+            "label": "Availability of garbage disposal system?"
+          },
+          {
+            "id": "pit_m",
+            "label": "Availability of water storage and watering facilities?"
+          },
+          {
+            "id": "pit_n",
+            "label": "Availability of high pressure pipe line for cleaning?"
+          },
+          {
+            "id": "pit_o",
+            "label": "Availability and proper working of coach washing plant?"
+          },
+          {
+            "id": "pit_p",
+            "label": "Availability of Surveillance cameras in all Coaching Depots for monitoring maintenance activity?"
+          }
+        ]
+      },
+      {
+        "id": "train_maintenance",
+        "title": "B. Train Maintenance",
+        "items": [
+          {
+            "id": "tm_a",
+            "label": "All equipments in bogie frame secured?"
+          },
+          {
+            "id": "tm_b",
+            "label": "All clearances in CBC/Screw coupling within prescribed limits?"
+          },
+          {
+            "id": "tm_c",
+            "label": "Brake indicator in working condition?"
+          },
+          {
+            "id": "tm_d",
+            "label": "Torquing and paint marking of nuts/bolts as prescribed by RB/RDSO/ZR done?"
+          },
+          {
+            "id": "tm_e",
+            "label": "NDT (DPT/Eddy current) of wheel disc attended as per schedule?"
+          },
+          {
+            "id": "tm_f",
+            "label": "Brake block/brake pad within prescribed limits?"
+          },
+          {
+            "id": "tm_g",
+            "label": "WSP system in working order?"
+          },
+          {
+            "id": "tm_h",
+            "label": "Stiffener plate thickness being measured?"
+          },
+          {
+            "id": "tm_i",
+            "label": "ACP/PEASD in working order?"
+          },
+          {
+            "id": "tm_j",
+            "label": "Recording of full load and no load voltage of each cell of SMF batteries done as per guidelines?"
+          },
+          {
+            "id": "tm_k",
+            "label": "Fire & Smoke detection system in working condition and fire extinguisher available?"
+          },
+          {
+            "id": "tm_fdas1",
+            "label": "FDAS/FDSS: HLI interface software along with hardware (dongle) for air flow testing available?"
+          },
+          {
+            "id": "tm_fdas2",
+            "label": "FDAS/FDSS: Air flow reading Fn\u00b120% is taken?"
+          },
+          {
+            "id": "tm_fdas3",
+            "label": "FDAS/FDSS: Cleaning of sampling points, pipe and capillaries by vacuum cleaning done?"
+          },
+          {
+            "id": "tm_fdas4",
+            "label": "FDAS/FDSS: Smoke test by simulating smoke generator done including threshold value check?"
+          },
+          {
+            "id": "tm_fdas5",
+            "label": "FDAS/FDSS: Performance of brake application \u2014 activate at stage 3 (Fire) checked?"
+          },
+          {
+            "id": "tm_fdas6",
+            "label": "FDAS/FDSS: Over heated wire test done?"
+          },
+          {
+            "id": "tm_fdas7",
+            "label": "FDAS/FDSS: Solenoid valve is sealed?"
+          },
+          {
+            "id": "tm_fe1",
+            "label": "Fire Extinguisher: Two fire extinguishers available per coach?"
+          },
+          {
+            "id": "tm_fe2",
+            "label": "Fire Extinguisher: AMC contract for all schedules (Monthly/Quarterly/Yearly/3-yearly) in place?"
+          },
+          {
+            "id": "tm_fe3",
+            "label": "Fire Extinguisher: Hydraulic testing done in 3rd yearly test?"
+          },
+          {
+            "id": "tm_fe4",
+            "label": "Fire Extinguisher: No physical damage to fire extinguisher?"
+          },
+          {
+            "id": "tm_fe5",
+            "label": "Fire Extinguisher: Fire extinguisher not due for any schedule/refilling?"
+          },
+          {
+            "id": "tm_l",
+            "label": "Condition of footsteps satisfactory?"
+          },
+          {
+            "id": "tm_m",
+            "label": "Condition of handrail satisfactory?"
+          },
+          {
+            "id": "tm_n",
+            "label": "Door closures working properly in AC coach?"
+          }
+        ]
+      },
+      {
+        "id": "passenger_amenities",
+        "title": "C. Passenger Amenities",
+        "items": [
+          {
+            "id": "pa_o",
+            "label": "Toilet: Coach toilet properly cleaned?"
+          },
+          {
+            "id": "pa_p",
+            "label": "Toilet: Water available in the coach?"
+          },
+          {
+            "id": "pa_q",
+            "label": "Toilet: Toilet fittings (taps, mirror, ventilation, health faucet, mug, soap dispenser, toilet paper) intact?"
+          },
+          {
+            "id": "pa_r",
+            "label": "Toilet: Flushing system in toilets in working order?"
+          },
+          {
+            "id": "pa_s",
+            "label": "Toilet: Amenity fittings in doorway area (dustbins, washbasin, mirror) intact?"
+          },
+          {
+            "id": "pa_t",
+            "label": "Toilet: Bio-toilets functioning properly? Any bad smell?"
+          },
+          {
+            "id": "pa_u",
+            "label": "Cabin: Window & aisle curtains properly cleaned?"
+          },
+          {
+            "id": "pa_v",
+            "label": "Cabin: Windows intact and visibility satisfactory?"
+          },
+          {
+            "id": "pa_w",
+            "label": "Staff/Material: Proper tools available with C&W staff?"
+          },
+          {
+            "id": "pa_x",
+            "label": "Staff/Material: Gauges available in adequate numbers and properly calibrated?"
+          },
+          {
+            "id": "pa_y",
+            "label": "Staff/Material: Any shortage of safety fitting?"
+          },
+          {
+            "id": "pa_z",
+            "label": "Staff/Material: Prescribed procedure for rake maintenance known to staff and followed?"
+          },
+          {
+            "id": "pa_aa",
+            "label": "Staff/Material: Standard tool kit and portable lights available for pit line staff?"
+          },
+          {
+            "id": "pa_bb",
+            "label": "Staff/Material: Danger board provided to protect washing line & sick line before starting work?"
+          },
+          {
+            "id": "pa_cc",
+            "label": "Contract: Quality of washing of linen in departmental/BOOT laundries adequate?"
+          },
+          {
+            "id": "pa_dd",
+            "label": "Contract: Rake cleaning and passenger amenities attention adequate, mechanized cleaning ensured?"
+          },
+          {
+            "id": "pa_ee",
+            "label": "Contract: Pest and rodent control contracts effective?"
+          },
+          {
+            "id": "pa_ff",
+            "label": "Contract: Automatic coach washing plant, ETP, water recycling plant available and functional?"
+          },
+          {
+            "id": "pa_gg",
+            "label": "Contract: System of monitoring complaints/feedback in place?"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "sick_line_platforms",
+    "title": "Sick Line & Train Duty on Platforms",
+    "icon": "\ud83c\udfe5",
+    "subsections": [
+      {
+        "id": "sick_line_insp",
+        "title": "D. Sick Line Inspection",
+        "items": [
+          {
+            "id": "sli_a",
+            "label": "Adequacy of infrastructural facilities for IOH?"
+          },
+          {
+            "id": "sli_b",
+            "label": "Road access and availability of material handling equipment?"
+          },
+          {
+            "id": "sli_c",
+            "label": "Availability of air dryers for compressors in pit line and sick line?"
+          },
+          {
+            "id": "sli_d",
+            "label": "Quality of repairs during IOH \u2014 deficiencies observed? (note in remarks)"
+          },
+          {
+            "id": "sli_e",
+            "label": "'Must change' items are replaced during IOH?"
+          },
+          {
+            "id": "sli_f",
+            "label": "Quality of over hauled trolleys received from Workshops for IOH of Mail/Express coaches?"
+          },
+          {
+            "id": "sli_g",
+            "label": "Adequacy of lifting facilities?"
+          },
+          {
+            "id": "sli_h",
+            "label": "Welding practices, particularly earthing, and training of welders satisfactory?"
+          },
+          {
+            "id": "sli_i",
+            "label": "Steps taken for system improvement and innovations?"
+          },
+          {
+            "id": "sli_j",
+            "label": "Availability of units exchange spares?"
+          },
+          {
+            "id": "sli_k",
+            "label": "Comments on certifications, quality audits by 3rd party, etc. satisfactory?"
+          },
+          {
+            "id": "sli_l",
+            "label": "Display of flex boards/banners with relevant instructions available?"
+          },
+          {
+            "id": "sli_m",
+            "label": "Availability of standard tools and gauges and their usage?"
+          },
+          {
+            "id": "sli_n",
+            "label": "Availability of personal protective equipment (PPE) for staff?"
+          },
+          {
+            "id": "sli_o",
+            "label": "System of record keeping \u2014 data of wheels, DV, CBC, Bearings, etc. available in database?"
+          },
+          {
+            "id": "sli_p",
+            "label": "Status of execution of works related to infrastructure improvement?"
+          },
+          {
+            "id": "sli_j2",
+            "label": "Adequacy of watering facilities \u2014 booster pump available and automatically operated?"
+          },
+          {
+            "id": "sli_k2",
+            "label": "Axle box temperature taken and adequate non-contact type axle box temperature gauge with storage feature available?"
+          },
+          {
+            "id": "sli_l2",
+            "label": "Availability of standard tools, gauges, portable lights, etc.?"
+          },
+          {
+            "id": "sli_m2",
+            "label": "Availability of proper means of communication (CUG/Walki Talkie sets)?"
+          },
+          {
+            "id": "sli_n2",
+            "label": "Availability of adequate spares and display of the list?"
+          }
+        ]
+      },
+      {
+        "id": "materials_store",
+        "title": "F. Materials / Store",
+        "items": [
+          {
+            "id": "ms_a",
+            "label": "Important items out of stock / in short supply?"
+          },
+          {
+            "id": "ms_b",
+            "label": "AACs of different items are adequate?"
+          },
+          {
+            "id": "ms_c",
+            "label": "Proper storage of rubber items?"
+          },
+          {
+            "id": "ms_d",
+            "label": "System of raising warranty complaints in place?"
+          },
+          {
+            "id": "ms_e",
+            "label": "Housekeeping and disposal of scrap satisfactory?"
+          }
+        ]
+      },
+      {
+        "id": "train_duty_platforms",
+        "title": "E. Train Duty on Platforms / Other End Attention",
+        "items": [
+          {
+            "id": "tdp_a",
+            "label": "All rolling in & rolling out huts have proper lighting facility for all PFs?"
+          },
+          {
+            "id": "tdp_b",
+            "label": "Light focus is on undergear & illumination is proper?"
+          },
+          {
+            "id": "tdp_c",
+            "label": "Proper path available at off side of platform for C&W staff for enroute examination & watering?"
+          },
+          {
+            "id": "tdp_d",
+            "label": "Danger board provided to protect platform before starting work by C&W staff?"
+          },
+          {
+            "id": "tdp_e",
+            "label": "Proper releasing of all coaches and cross check of brake indicator after loco change/reversal being done?"
+          },
+          {
+            "id": "tdp_f",
+            "label": "Adequate halt available for other end attention?"
+          },
+          {
+            "id": "tdp_g",
+            "label": "Rakes properly locked and stabled at secure locations?"
+          },
+          {
+            "id": "tdp_h",
+            "label": "On arrival of terminating train \u2014 DRS Card collected and availability/damage deficiency ensured?"
+          },
+          {
+            "id": "tdp_i",
+            "label": "Watering properly done along with cleaning of coaches (Platform return train)?"
+          }
+        ]
+      },
+      {
+        "id": "it_establishment",
+        "title": "G & H. IT Systems & Establishment",
+        "items": [
+          {
+            "id": "it_a",
+            "label": "IT Systems: Proper systems available for maintenance of IT-based systems (GPS, FDSS, CCTV, RFID, etc.)?"
+          },
+          {
+            "id": "it_b",
+            "label": "IT Systems: Staff conversant with IT-based systems?"
+          },
+          {
+            "id": "it_c",
+            "label": "IT Systems: AMCs in place and operational?"
+          },
+          {
+            "id": "it_d",
+            "label": "IT Systems: At least 1 staff/supervisor deputed full time on CMM and IT systems?"
+          },
+          {
+            "id": "it_e",
+            "label": "IT Systems: Different functionalities of CMM being used?"
+          },
+          {
+            "id": "it_f",
+            "label": "IT Systems: Internet access and speed adequate?"
+          },
+          {
+            "id": "it_g",
+            "label": "IT Systems: Adequate computers, printers, UPS, etc. available?"
+          },
+          {
+            "id": "est_a",
+            "label": "Establishment: Adequate number of staff deputed for various activities?"
+          },
+          {
+            "id": "est_b",
+            "label": "Establishment: Vacancies and action taken thereof reviewed?"
+          },
+          {
+            "id": "est_c",
+            "label": "Establishment: Staff grievances addressed?"
+          },
+          {
+            "id": "est_d",
+            "label": "Establishment: Staff amenities adequate?"
+          },
+          {
+            "id": "est_e",
+            "label": "Establishment: Level of staff motivation and steps to increase satisfactory?"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "freight_wagon",
+    "title": "Freight / Wagon Inspection",
+    "icon": "\ud83d\ude9b",
+    "subsections": [
+      {
+        "id": "freight_registers",
+        "title": "A. Yard Office \u2014 Registers",
+        "items": [
+          {
+            "id": "fr_1_i",
+            "label": "Daily Diary Register: Shift wise details of important instructions written in diary?"
+          },
+          {
+            "id": "fr_1_ii",
+            "label": "Daily Diary Register: List of T&P given in charge of duty JE/SE with actually present?"
+          },
+          {
+            "id": "fr_1_iii",
+            "label": "Daily Diary Register: Defective M&P properly entered in the record?"
+          },
+          {
+            "id": "fr_1_iv",
+            "label": "Daily Diary Register: Name/Token number of all present staff properly recorded?"
+          },
+          {
+            "id": "fr_1_v",
+            "label": "Daily Diary Register: Work allotted to staff written properly in the diary?"
+          },
+          {
+            "id": "fr_1_vi",
+            "label": "Daily Diary Register: Diary has been super checked by the incharge?"
+          },
+          {
+            "id": "fr_2_i",
+            "label": "Daily Damage Report (DDR): Details of all defects mentioned against individual wagon?"
+          },
+          {
+            "id": "fr_2_ii",
+            "label": "Daily Damage Report (DDR): All repairs attended in wagons being entered?"
+          },
+          {
+            "id": "fr_2_iii",
+            "label": "Daily Damage Report (DDR): Material consumed in maintenance against repaired wagon being entered?"
+          },
+          {
+            "id": "fr_2_iv",
+            "label": "Daily Damage Report (DDR): Summary of material consumed in train examination being prepared?"
+          },
+          {
+            "id": "fr_2_v",
+            "label": "Daily Damage Report (DDR): Numbers of damage vehicles within ineffective limits?"
+          },
+          {
+            "id": "fr_2_vi",
+            "label": "Daily Damage Report (DDR): Repetitions of defects highlighted to higher authority?"
+          },
+          {
+            "id": "fr_2_vii",
+            "label": "Daily Damage Report (DDR): Any check on damage by the incharge?"
+          },
+          {
+            "id": "fr_3_i",
+            "label": "Pressure Testing Register: Register is made as per standard Proforma?"
+          },
+          {
+            "id": "fr_3_ii",
+            "label": "Pressure Testing Register: Pressure is tested by loco or compressor and RTR?"
+          },
+          {
+            "id": "fr_3_iii",
+            "label": "Pressure Testing Register: Any train skipped for pressure testing?"
+          },
+          {
+            "id": "fr_3_iv",
+            "label": "Pressure Testing Register: Details of defect to improve brake power mentioned in record?"
+          },
+          {
+            "id": "fr_3_v",
+            "label": "Pressure Testing Register: Record of piston stroke and releasing time within prescribed limit?"
+          },
+          {
+            "id": "fr_4_i",
+            "label": "Rolling In/Rolling Out Register: Details of all defects noticed during rolling in/out are recorded?"
+          },
+          {
+            "id": "fr_4_ii",
+            "label": "Rolling In/Rolling Out Register: Temperature of all axle box/CTRB checked with non-contact thermometer?"
+          },
+          {
+            "id": "fr_4_iii",
+            "label": "Rolling In/Rolling Out Register: DVS memo issued for attending actionable defect noticed during check?"
+          },
+          {
+            "id": "fr_5_i",
+            "label": "Special Drive Register: All instructions given by control written properly in the register?"
+          },
+          {
+            "id": "fr_5_ii",
+            "label": "Special Drive Register: Compliance of the drive given?"
+          },
+          {
+            "id": "fr_5_iii",
+            "label": "Special Drive Register: Drives are not repeated or unpurposeful?"
+          },
+          {
+            "id": "fr_5_iv",
+            "label": "Special Drive Register: Category of drive (Railway Board/HQ/Division) mentioned?"
+          }
+        ]
+      },
+      {
+        "id": "freight_sick_roh",
+        "title": "B. Freight Sick Line & ROH Depot",
+        "items": [
+          {
+            "id": "fsr_a",
+            "label": "Sick Line: Adequacy of infrastructural facilities for ROH?"
+          },
+          {
+            "id": "fsr_b",
+            "label": "Sick Line: Road access and material handling equipment available?"
+          },
+          {
+            "id": "fsr_c",
+            "label": "Sick Line: Quality of repairs during ROH \u2014 deficiencies? (note in remarks)"
+          },
+          {
+            "id": "fsr_d",
+            "label": "Sick Line: 'Must change' items replaced during ROH?"
+          },
+          {
+            "id": "fsr_e",
+            "label": "Sick Line: Adequacy of lifting facilities?"
+          },
+          {
+            "id": "fsr_f",
+            "label": "Sick Line: Availability of units exchange spares?"
+          },
+          {
+            "id": "fsr_g",
+            "label": "Sick Line: Availability of standard tools, gauges and their usage?"
+          },
+          {
+            "id": "fsr_h",
+            "label": "Sick Line: Availability of PPE for staff?"
+          },
+          {
+            "id": "fsr_i",
+            "label": "Sick Line: Housekeeping satisfactory?"
+          },
+          {
+            "id": "fsr_j",
+            "label": "ROH Depot: System of communication, reporting and follow up in place?"
+          },
+          {
+            "id": "fsr_k",
+            "label": "ROH Depot: Wagon failure analysis and unscheduled detachments reviewed?"
+          },
+          {
+            "id": "fsr_l",
+            "label": "ROH Depot: Whether wagon failures maintained in a database for analysis?"
+          },
+          {
+            "id": "fsr_m",
+            "label": "ROH Depot: Whether any stock overdue ROH/POH schedule?"
+          },
+          {
+            "id": "fsr_n",
+            "label": "ROH Depot: Coaches running overdue schedules reviewed?"
+          }
+        ]
+      },
+      {
+        "id": "freight_brake_weighbridge",
+        "title": "C. Brake Power Checks & Weighbridge",
+        "items": [
+          {
+            "id": "bp_i",
+            "label": "Brake Power: Register is made as per standard Proforma?"
+          },
+          {
+            "id": "bp_ii",
+            "label": "Brake Power: Pressure is tested by loco or compressor and RTR?"
+          },
+          {
+            "id": "bp_iii",
+            "label": "Brake Power: Any train skipped for pressure testing?"
+          },
+          {
+            "id": "bp_iv",
+            "label": "Brake Power: Details of defect to improve brake power mentioned in record?"
+          },
+          {
+            "id": "bp_v",
+            "label": "Brake Power: Record of piston stroke and releasing time within prescribed limit?"
+          },
+          {
+            "id": "wb_1",
+            "label": "Weighbridge: Certificate of Stamping and Verification by state weights & measures department available?"
+          },
+          {
+            "id": "wb_2",
+            "label": "Weighbridge: AMC of weighbridge available?"
+          },
+          {
+            "id": "wb_3",
+            "label": "Weighbridge: Testing done as per procedure and within duration laid down?"
+          },
+          {
+            "id": "wb_4",
+            "label": "Weighbridge: Break Down Register available?"
+          },
+          {
+            "id": "wb_5",
+            "label": "Weighbridge: Digitizer and control panel locked and sealed?"
+          },
+          {
+            "id": "wb_6",
+            "label": "Weighbridge: Junction box is locked?"
+          },
+          {
+            "id": "wb_7",
+            "label": "Weighbridge: Weighment reading recorded at speed less than 15 kmph?"
+          },
+          {
+            "id": "wb_8",
+            "label": "Weighbridge: Rakes moved through weighbridge with uniform speed below 15kmph without acceleration/deceleration?"
+          },
+          {
+            "id": "wb_9",
+            "label": "Weighbridge: Weighment done in pulling mode?"
+          },
+          {
+            "id": "wb_10",
+            "label": "Weighbridge: 'Weighbridge Ahead' Board available on both sides about 300m in advance?"
+          },
+          {
+            "id": "wb_11",
+            "label": "Weighbridge: Track up to 100m on either side is level tangent?"
+          },
+          {
+            "id": "wb_12",
+            "label": "Weighbridge: Track having adequate ballast cushioning and proper drainage?"
+          },
+          {
+            "id": "wb_13",
+            "label": "Weighbridge: Creep Anchor provided to take care of possible creep?"
+          },
+          {
+            "id": "wb_14",
+            "label": "Weighbridge: Provision of earthing and its maintenance as per IS 153043-1966?"
+          },
+          {
+            "id": "wb_15",
+            "label": "Weighbridge: No electric connection taken from junction box between UPS and Weighbridge computer/Digitizer?"
+          }
+        ]
+      }
+    ]
+  }
+]
