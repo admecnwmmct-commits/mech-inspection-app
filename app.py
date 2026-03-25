@@ -27,8 +27,8 @@ ADMIN_PASSWORD   = os.environ.get("ADMIN_PASSWORD", "bctrailway2026")
 
 # ── helpers ───────────────────────────────────────────────────────────────────
 def answered_items(responses):
-    """Return only items that have a yes/no answer."""
-    return {k: v for k, v in responses.items() if v.get('answer') in ('yes','no')}
+    """Return only items that have a yes/no/obs answer."""
+    return {k: v for k, v in responses.items() if v.get('answer') in ('yes','no','obs')}
 
 def collect_copy_to(header, responses):
     """Auto-collect unique Action By names from all NO items."""
@@ -142,18 +142,28 @@ def generate_pdf(header, responses, other_remarks='', extra_copy_to='', bw=False
             sub_rows = []
             for item in sub['items']:
                 resp = responses.get(item['id'], {})
-                if resp.get('answer') not in ('yes','no'):
+                if resp.get('answer') not in ('yes','no','obs'):
                     continue
-                ans     = resp['answer'].upper()
+                ans     = resp['answer']
                 remark  = resp.get('remark','')
-                action  = resp.get('action_by','') if ans == 'NO' else ''
-                ans_color = green if ans == 'YES' else red
-                sub_rows.append([
-                    Paragraph(item['label'], body_style),
-                    Paragraph(f"<b>{ans}</b>", ParagraphStyle('an', fontSize=8, fontName='Helvetica-Bold', textColor=ans_color, alignment=TA_CENTER)),
-                    Paragraph(remark or '', remark_style),
-                    Paragraph(action or '', action_style),
-                ])
+                action  = resp.get('action_by','') if ans == 'no' else ''
+                if ans == 'obs':
+                    # Observation-only item — spans status col, no yes/no
+                    sub_rows.append([
+                        Paragraph(item['label'], body_style),
+                        Paragraph('—', ParagraphStyle('an', fontSize=8, fontName='Helvetica', textColor=colors.HexColor('#888888'), alignment=TA_CENTER)),
+                        Paragraph(remark or '', ParagraphStyle('obsrm', fontSize=8, fontName='Helvetica-Oblique', textColor=colors.HexColor('#5a4000'), leading=11)),
+                        Paragraph('', action_style),
+                    ])
+                else:
+                    ans_up    = ans.upper()
+                    ans_color = green if ans == 'yes' else red
+                    sub_rows.append([
+                        Paragraph(item['label'], body_style),
+                        Paragraph(f"<b>{ans_up}</b>", ParagraphStyle('an', fontSize=8, fontName='Helvetica-Bold', textColor=ans_color, alignment=TA_CENTER)),
+                        Paragraph(remark or '', remark_style),
+                        Paragraph(action or '', action_style),
+                    ])
             if sub_rows:
                 sec_rows.append((sub['title'], sub_rows))
 
@@ -304,7 +314,7 @@ def generate_docx(header, responses, other_remarks='', extra_copy_to='', bw=Fals
             sub_rows = []
             for item in sub['items']:
                 resp = responses.get(item['id'], {})
-                if resp.get('answer') not in ('yes','no'):
+                if resp.get('answer') not in ('yes','no','obs'):
                     continue
                 sub_rows.append((item, resp))
             if not sub_rows:
@@ -322,25 +332,36 @@ def generate_docx(header, responses, other_remarks='', extra_copy_to='', bw=Fals
                 hdr_cells[ci].paragraphs[0].runs[0].font.color.rgb = hdr_txt
 
             for i, (item, resp) in enumerate(sub_rows, 1):
-                ans    = resp['answer'].upper()
-                remark = resp.get('remark','')
-                action = resp.get('action_by','') if ans == 'NO' else ''
+                ans_raw = resp['answer']
+                remark  = resp.get('remark','')
+                action  = resp.get('action_by','') if ans_raw == 'no' else ''
                 row = tbl2.add_row().cells
                 row[0].text = item['label']
-                row[1].text = ans
-                row[2].text = remark
-                row[3].text = action
-                for ci in range(4):
-                    row[ci].paragraphs[0].runs[0].font.size = Pt(8)
-                run2 = row[1].paragraphs[0].runs[0]
-                run2.bold = True
-                if ans == 'YES':
-                    run2.font.color.rgb = yes_clr
-                elif ans == 'NO':
-                    run2.font.color.rgb = no_clr
-                if action:
-                    row[3].paragraphs[0].runs[0].bold = True
-                    row[3].paragraphs[0].runs[0].font.color.rgb = RGBColor(0x0a, 0x16, 0x28)
+                row[0].paragraphs[0].runs[0].font.size = Pt(8)
+                if ans_raw == 'obs':
+                    row[1].text = 'Obs.'
+                    row[1].paragraphs[0].runs[0].font.size = Pt(8)
+                    row[1].paragraphs[0].runs[0].font.color.rgb = RGBColor(0x88,0x88,0x88)
+                    row[2].text = remark
+                    row[2].paragraphs[0].runs[0].font.size = Pt(8)
+                    row[2].paragraphs[0].runs[0].font.italic = True
+                    row[3].text = ''
+                else:
+                    ans = ans_raw.upper()
+                    row[1].text = ans
+                    row[2].text = remark
+                    row[3].text = action
+                    for ci in range(1,4):
+                        row[ci].paragraphs[0].runs[0].font.size = Pt(8)
+                    run2 = row[1].paragraphs[0].runs[0]
+                    run2.bold = True
+                    if ans == 'YES':
+                        run2.font.color.rgb = yes_clr
+                    elif ans == 'NO':
+                        run2.font.color.rgb = no_clr
+                    if action:
+                        row[3].paragraphs[0].runs[0].bold = True
+                        row[3].paragraphs[0].runs[0].font.color.rgb = RGBColor(0x0a, 0x16, 0x28)
                 if i % 2 == 0:
                     for ci in range(4):
                         set_cell_bg(row[ci], 'f5f5f5')
@@ -408,7 +429,8 @@ def generate_whatsapp(header, responses, other_remarks='', extra_copy_to='', bw=
         for sub in section['subsections']:
             for item in sub['items']:
                 resp = responses.get(item['id'], {})
-                if resp.get('answer') == 'no':
+                ans = resp.get('answer','')
+                if ans == 'no':
                     nc_count += 1
                     remark = resp.get('remark','')
                     action = resp.get('action_by','')
@@ -416,6 +438,10 @@ def generate_whatsapp(header, responses, other_remarks='', extra_copy_to='', bw=
                     if remark: line += f"\n  Remark: {remark}"
                     if action: line += f"\n  Action By: {action}"
                     lines.append(line)
+                elif ans == 'obs':
+                    remark = resp.get('remark','')
+                    if remark:
+                        lines.append(f"📝 {item['label'][:70]}\n  Obs: {remark}")
     if nc_count == 0:
         lines.append("Nil — Full Compliance")
 
@@ -523,7 +549,16 @@ def summary():
                         'label':   item['label'],
                         'remark':  resp.get('remark',''),
                         'section': section['title'],
-                        'action_by': resp.get('action_by','')
+                        'action_by': resp.get('action_by',''),
+                        'type': 'no'
+                    })
+                elif resp.get('answer') == 'obs' and resp.get('remark','').strip():
+                    nc_items.append({
+                        'label':   item['label'],
+                        'remark':  resp.get('remark',''),
+                        'section': section['title'],
+                        'action_by': '',
+                        'type': 'obs'
                     })
     auto_copy = collect_copy_to(header, responses)
     return render_template('summary.html',
