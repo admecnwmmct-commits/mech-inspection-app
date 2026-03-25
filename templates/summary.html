@@ -128,12 +128,21 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--navy);color:var(--w
   {% if nc_items %}
   <div class="nc-list">
     {% for item in nc_items %}
+    {% if item.type == 'obs' %}
+    <div class="nc-item" style="background:rgba(244,160,20,0.06);border-color:rgba(244,160,20,0.2);">
+      <div style="font-size:10.5px;color:var(--saffron);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">📝 Observation</div>
+      <div class="nc-label">{{ item.label }}</div>
+      <div class="nc-meta">{{ item.section }}</div>
+      {% if item.remark %}<div class="nc-remark" style="color:var(--saffron);">{{ item.remark }}</div>{% endif %}
+    </div>
+    {% else %}
     <div class="nc-item">
       <div class="nc-label">{{ item.label }}</div>
       <div class="nc-meta">{{ item.section }}</div>
       {% if item.remark %}<div class="nc-remark">Remark: {{ item.remark }}</div>{% endif %}
       {% if item.action_by %}<div class="nc-action">&#128100; Action By: {{ item.action_by }}</div>{% endif %}
     </div>
+    {% endif %}
     {% endfor %}
   </div>
   {% else %}

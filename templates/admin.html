@@ -65,6 +65,10 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--navy);color:var(--w
 
 .drag-handle{color:var(--muted);cursor:grab;font-size:14px;padding:4px;}
 .count-badge{font-size:11px;color:var(--muted);background:rgba(255,255,255,0.08);padding:2px 8px;border-radius:10px;}
+.type-toggle{display:flex;gap:4px;flex-shrink:0;}
+.type-btn{padding:3px 10px;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:rgba(255,255,255,0.04);color:var(--muted);font-family:'IBM Plex Sans',sans-serif;transition:all .12s;}
+.type-btn.active-yn{background:rgba(58,123,213,0.15);border-color:rgba(58,123,213,0.4);color:#5a9bf5;}
+.type-btn.active-obs{background:rgba(244,160,20,0.12);border-color:rgba(244,160,20,0.35);color:var(--saffron);}
 </style>
 </head>
 <body>
@@ -260,8 +264,12 @@ function makeSubBlock(sub, si, bi){
 }
 
 function makeItemRow(item, si, bi, ii){
+  var wrap = document.createElement('div');
+  wrap.style.marginBottom = '6px';
+
   var row = document.createElement('div');
   row.className = 'item-row';
+  row.style.marginBottom = '2px';
 
   var inp = document.createElement('textarea');
   inp.className = 'item-input';
@@ -274,7 +282,6 @@ function makeItemRow(item, si, bi, ii){
     this.style.height = 'auto';
     this.style.height = this.scrollHeight + 'px';
   };
-  // Auto resize
   setTimeout(function(){
     inp.style.height = 'auto';
     inp.style.height = inp.scrollHeight + 'px';
@@ -291,7 +298,45 @@ function makeItemRow(item, si, bi, ii){
 
   row.appendChild(inp);
   row.appendChild(delBtn);
-  return row;
+
+  // Type toggle row
+  var typeRow = document.createElement('div');
+  typeRow.style.cssText = 'display:flex;align-items:center;gap:6px;margin-left:2px;margin-bottom:4px;';
+
+  var typeLabel = document.createElement('span');
+  typeLabel.style.cssText = 'font-size:10.5px;color:var(--muted);';
+  typeLabel.textContent = 'Answer type:';
+
+  var curType = item.item_type || 'yn';
+
+  var btnYN = document.createElement('button');
+  btnYN.className = 'type-btn ' + (curType==='yn' ? 'active-yn' : '');
+  btnYN.textContent = '✓/✗ Yes / No';
+
+  var btnObs = document.createElement('button');
+  btnObs.className = 'type-btn ' + (curType==='obs' ? 'active-obs' : '');
+  btnObs.textContent = '📝 Observation Only';
+
+  btnYN.onclick = function(){
+    data[si].subsections[bi].items[ii].item_type = 'yn';
+    btnYN.className = 'type-btn active-yn';
+    btnObs.className = 'type-btn';
+    markDirty();
+  };
+  btnObs.onclick = function(){
+    data[si].subsections[bi].items[ii].item_type = 'obs';
+    btnObs.className = 'type-btn active-obs';
+    btnYN.className = 'type-btn';
+    markDirty();
+  };
+
+  typeRow.appendChild(typeLabel);
+  typeRow.appendChild(btnYN);
+  typeRow.appendChild(btnObs);
+
+  wrap.appendChild(row);
+  wrap.appendChild(typeRow);
+  return wrap;
 }
 
 function addSection(){

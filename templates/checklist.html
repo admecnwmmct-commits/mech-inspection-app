@@ -36,6 +36,10 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--navy);color:var(--w
 .yn-btn.no.active{background:rgba(239,68,68,0.15);border-color:var(--red);color:var(--red);}
 .remark-input{flex:1;min-width:140px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;padding:5px 10px;color:var(--white);font-size:12px;font-family:'IBM Plex Sans',sans-serif;outline:none;}
 .remark-input::placeholder{color:var(--muted);}
+.obs-input{width:100%;background:rgba(244,160,20,0.06);border:1px solid rgba(244,160,20,0.25);border-radius:6px;padding:7px 12px;color:var(--white);font-size:12.5px;font-family:'IBM Plex Sans',sans-serif;outline:none;resize:none;line-height:1.5;}
+.obs-input::placeholder{color:rgba(244,160,20,0.45);}
+.obs-input:focus{border-color:rgba(244,160,20,0.5);}
+.obs-badge{font-size:10.5px;color:var(--saffron);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;}
 .action-row{display:none;margin-top:6px;}
 .action-row.visible{display:flex;align-items:center;gap:6px;}
 .action-input{flex:1;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);border-radius:6px;padding:5px 10px;color:var(--white);font-size:12px;font-family:'IBM Plex Sans',sans-serif;outline:none;}
@@ -107,18 +111,38 @@ function buildUI(){
         row.appendChild(lbl);
         var ctrl=document.createElement('div');
         ctrl.className='item-controls';
-        var yBtn=document.createElement('button');
-        yBtn.className='yn-btn yes';yBtn.textContent='Yes';
-        var nBtn=document.createElement('button');
-        nBtn.className='yn-btn no';nBtn.textContent='No';
-        (function(id,yb,nb,r){
-          yb.onclick=function(){setAnswer(id,'yes',yb,nb,r);};
-          nb.onclick=function(){setAnswer(id,'no',nb,yb,r);};
-        })(item.id,yBtn,nBtn,row);
-        var rmk=document.createElement('input');
-        rmk.className='remark-input';rmk.type='text';rmk.placeholder='Remarks (optional)';
-        (function(id,inp){inp.oninput=function(){setRemark(id,inp.value);};})(item.id,rmk);
-        ctrl.appendChild(yBtn);ctrl.appendChild(nBtn);ctrl.appendChild(rmk);
+        var itemType = item.item_type || 'yn';
+        if(itemType === 'obs'){
+          // Observation only — just a text area
+          var obsBadge=document.createElement('div');
+          obsBadge.className='obs-badge';obsBadge.textContent='Observation / Remark';
+          var obsInp=document.createElement('textarea');
+          obsInp.className='obs-input';obsInp.rows=2;
+          obsInp.placeholder='Enter observation or remark for this point...';
+          (function(id,inp){
+            inp.oninput=function(){
+              if(!responses[id])responses[id]={};
+              responses[id].answer='obs';
+              responses[id].remark=inp.value;
+              updateProgress();
+            };
+          })(item.id,obsInp);
+          ctrl.appendChild(obsBadge);
+          ctrl.appendChild(obsInp);
+        } else {
+          var yBtn=document.createElement('button');
+          yBtn.className='yn-btn yes';yBtn.textContent='Yes';
+          var nBtn=document.createElement('button');
+          nBtn.className='yn-btn no';nBtn.textContent='No';
+          (function(id,yb,nb,r){
+            yb.onclick=function(){setAnswer(id,'yes',yb,nb,r);};
+            nb.onclick=function(){setAnswer(id,'no',nb,yb,r);};
+          })(item.id,yBtn,nBtn,row);
+          var rmk=document.createElement('input');
+          rmk.className='remark-input';rmk.type='text';rmk.placeholder='Remarks (optional)';
+          (function(id,inp){inp.oninput=function(){setRemark(id,inp.value);};})(item.id,rmk);
+          ctrl.appendChild(yBtn);ctrl.appendChild(nBtn);ctrl.appendChild(rmk);
+        }
         row.appendChild(ctrl);
         var pr=document.createElement('div');
         pr.className='action-row';pr.id='action_row_'+item.id;
